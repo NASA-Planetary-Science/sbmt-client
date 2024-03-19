@@ -270,7 +270,7 @@ class DartConfigsTest
 	@Test
 	void testDidymosIdealImpact6_20200629_v01()
 	{
-		fail("Not yet implemented");
+		//NOT USED
 	}
 
 	@Test
@@ -332,9 +332,6 @@ class DartConfigsTest
         assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("DRACO_IMAGE"));
         assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[] { PointingSource.SPICE });
         assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.DRACO);
-//        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
-//        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.X);
-//        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.GASKELL).isTranspose(), true);
         assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
         assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
         assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).isTranspose(), true);
@@ -370,9 +367,6 @@ class DartConfigsTest
         assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("LUKE_IMAGE"));
         assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] { PointingSource.SPICE });
         assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.LUKE);
-//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.GASKELL).getRotation(), 0.0);
-//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.GASKELL).getFlip(), ImageFlip.X);
-//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.GASKELL).isTranspose(), true);
         assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
         assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
         assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).isTranspose(), true);
@@ -393,7 +387,7 @@ class DartConfigsTest
         LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
         assertEquals(lidarConfig.hasLidarData, false);
 
-        testStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
+        testStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
 
         assertArrayEquals(c.presentInMissions, InternalClientsWithDartModels);
         assertArrayEquals(c.defaultForMissions, new Mission[] {});
@@ -415,43 +409,881 @@ class DartConfigsTest
 	@Test
 	void testDimorphosIdealImpact2_20200629_v01()
 	{
-		fail("Not yet implemented");
+		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIMORPHOS, ShapeModelType.provide("ideal-impact2-20200629-v01")));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        String label = "Dimorphos-v004";
+        assertEquals(c.body, ShapeModelBody.DIMORPHOS);
+        assertEquals(c.author, ShapeModelType.provide("ideal-impact2-20200629-v01"));
+        assertEquals(c.modelLabel, "Ideal Impact 2 20200629 v01");
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.system, ShapeModelBody.DIDYMOS_SYSTEM);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.SIMULATED);
+        assertEquals(c.density, 0.0);
+        assertEquals(c.rotationRate, 0.0);
+        assertEquals(c.hasSystemBodies, false);
+        assertEquals(c.systemConfigs, Lists.newArrayList());
+        assertEquals(c.hasDTMs, true);
+        assertEquals(c.hasLineamentData, false);
+        assertEquals(c.hasMapmaker, false);
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.hasCustomBodyCubeSize, false);
+        assertEquals(c.customBodyCubeSize, 0.0);
+        assertEquals(c.useMinimumReferencePotential, false);
+        assertEquals(c.bodyReferencePotential, 0.0);
+        assertEquals(c.getBaseMapConfigName(), "config.txt");
+        assertEquals(c.bodyLowestResModelName, "");
+        assertEquals(c.rootDirOnServer, "/dimorphos/ideal-impact2-20200629-v01");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getShapeModelFileBaseName(), "shape/shape");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend("/dimorphos/ideal-impact2-20200629-v01/shape/", "shape0.obj.gz"));
+        assertEquals(c.getResolutionLabels(), ImmutableList.of("3145728 plates"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(3145728));
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, ImageSearchDefaultStartDate);
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, ImageSearchDefaultEndDate);
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 10000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1000.0);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 3);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact2-20200629-v01" + "/draco");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/dart/draco/ideal-impact2-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/dart/draco/ideal-impact2-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("DRACO_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.DRACO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues = imagingConfig.imagingInstruments.get(0).getFillValues();
+        Arrays.sort(fillValues);
+        assertArrayEquals(fillValues, new double[] {-32768.0, -32767.0, 4095.0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact2-20200629-v01" + "/leia");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/dart/leia/ideal-impact2-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), "/dart/leia/ideal-impact2-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("LEIA_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[] { PointingSource.CORRECTED_SPICE, PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.LEIA);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).isTranspose(), true);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues2 = imagingConfig.imagingInstruments.get(1).getFillValues();
+        Arrays.sort(fillValues2);
+        assertArrayEquals(fillValues2, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact2-20200629-v01" + "/luke");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), "/dart/luke/ideal-impact2-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), "/dart/luke/ideal-impact2-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("LUKE_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.LUKE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues3 = imagingConfig.imagingInstruments.get(2).getFillValues();
+        Arrays.sort(fillValues3);
+        assertArrayEquals(fillValues3, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getMaskValues(), new int[] {0,0,0,0});
+
+
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.hasHierarchicalImageSearch(), false);
+
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        assertEquals(spectrumConfig.hasSpectralData, false);
+
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        assertEquals(lidarConfig.hasLidarData, false);
+
+        testStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
+
+        assertArrayEquals(c.presentInMissions, InternalClientsWithDartModels);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+            {
+                new DBRunInfo(PointingSource.SPICE, Instrument.DRACO, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact2-20200629-v01/draco/imagelist-fullpath-info.txt", "dimorphos_ideal_impact2_20200629_v01_draco"),
+                new DBRunInfo(PointingSource.CORRECTED_SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact2-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_ideal_impact2_20200629_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact2-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_ideal_impact2_20200629_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LUKE, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact2-20200629-v01/luke/imagelist-fullpath-info.txt", "dimorphos_ideal_impact2_20200629_v01_luke"),
+    		}
+        );
 	}
 
 	@Test
 	void testDimorphosIdealImpact3_20200629_v01()
 	{
-		fail("Not yet implemented");
+		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIMORPHOS, ShapeModelType.provide("ideal-impact3-20200629-v01")));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        String label = "Dimorphos-v004";
+        assertEquals(c.body, ShapeModelBody.DIMORPHOS);
+        assertEquals(c.author, ShapeModelType.provide("ideal-impact3-20200629-v01"));
+        assertEquals(c.modelLabel, "Ideal Impact 3 20200629 v01");
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.system, ShapeModelBody.DIDYMOS_SYSTEM);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.SIMULATED);
+        assertEquals(c.density, 0.0);
+        assertEquals(c.rotationRate, 0.0);
+        assertEquals(c.hasSystemBodies, false);
+        assertEquals(c.systemConfigs, Lists.newArrayList());
+        assertEquals(c.hasDTMs, true);
+        assertEquals(c.hasLineamentData, false);
+        assertEquals(c.hasMapmaker, false);
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.hasCustomBodyCubeSize, false);
+        assertEquals(c.customBodyCubeSize, 0.0);
+        assertEquals(c.useMinimumReferencePotential, false);
+        assertEquals(c.bodyReferencePotential, 0.0);
+        assertEquals(c.getBaseMapConfigName(), "config.txt");
+        assertEquals(c.bodyLowestResModelName, "");
+        assertEquals(c.rootDirOnServer, "/dimorphos/ideal-impact3-20200629-v01");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getShapeModelFileBaseName(), "shape/shape");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend("/dimorphos/ideal-impact3-20200629-v01/shape/", "shape0.obj.gz"));
+        assertEquals(c.getResolutionLabels(), ImmutableList.of("3366134 plates"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(3366134));
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, ImageSearchDefaultStartDate);
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, ImageSearchDefaultEndDate);
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 10000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1000.0);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 3);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact3-20200629-v01" + "/draco");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/dart/draco/ideal-impact3-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/dart/draco/ideal-impact3-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("DRACO_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.DRACO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues = imagingConfig.imagingInstruments.get(0).getFillValues();
+        Arrays.sort(fillValues);
+        assertArrayEquals(fillValues, new double[] {-32768.0, -32767.0, 4095.0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact3-20200629-v01" + "/leia");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/dart/leia/ideal-impact3-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), "/dart/leia/ideal-impact3-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("LEIA_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[] { PointingSource.CORRECTED_SPICE, PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.LEIA);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).isTranspose(), true);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues2 = imagingConfig.imagingInstruments.get(1).getFillValues();
+        Arrays.sort(fillValues2);
+        assertArrayEquals(fillValues2, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact3-20200629-v01" + "/luke");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), "/dart/luke/ideal-impact3-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), "/dart/luke/ideal-impact3-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("LUKE_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.LUKE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues3 = imagingConfig.imagingInstruments.get(2).getFillValues();
+        Arrays.sort(fillValues3);
+        assertArrayEquals(fillValues3, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getMaskValues(), new int[] {0,0,0,0});
+
+
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.hasHierarchicalImageSearch(), false);
+
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        assertEquals(spectrumConfig.hasSpectralData, false);
+
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        assertEquals(lidarConfig.hasLidarData, false);
+
+        testStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
+
+        assertArrayEquals(c.presentInMissions, InternalClientsWithDartModels);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+            {
+                new DBRunInfo(PointingSource.SPICE, Instrument.DRACO, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact3-20200629-v01/draco/imagelist-fullpath-info.txt", "dimorphos_ideal_impact3_20200629_v01_draco"),
+                new DBRunInfo(PointingSource.CORRECTED_SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact3-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_ideal_impact3_20200629_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact3-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_ideal_impact3_20200629_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LUKE, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact3-20200629-v01/luke/imagelist-fullpath-info.txt", "dimorphos_ideal_impact3_20200629_v01_luke"),
+    		}
+        );
 	}
 
 	@Test
 	void testDimorphosIdealImpact4_20200629_v01()
 	{
-		fail("Not yet implemented");
+		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIMORPHOS, ShapeModelType.provide("ideal-impact4-20200629-v01")));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        String label = "Dimorphos-v004";
+        assertEquals(c.body, ShapeModelBody.DIMORPHOS);
+        assertEquals(c.author, ShapeModelType.provide("ideal-impact4-20200629-v01"));
+        assertEquals(c.modelLabel, "Ideal Impact 4 20200629 v01");
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.system, ShapeModelBody.DIDYMOS_SYSTEM);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.SIMULATED);
+        assertEquals(c.density, 0.0);
+        assertEquals(c.rotationRate, 0.0);
+        assertEquals(c.hasSystemBodies, false);
+        assertEquals(c.systemConfigs, Lists.newArrayList());
+        assertEquals(c.hasDTMs, true);
+        assertEquals(c.hasLineamentData, false);
+        assertEquals(c.hasMapmaker, false);
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.hasCustomBodyCubeSize, false);
+        assertEquals(c.customBodyCubeSize, 0.0);
+        assertEquals(c.useMinimumReferencePotential, false);
+        assertEquals(c.bodyReferencePotential, 0.0);
+        assertEquals(c.getBaseMapConfigName(), "config.txt");
+        assertEquals(c.bodyLowestResModelName, "");
+        assertEquals(c.rootDirOnServer, "/dimorphos/ideal-impact4-20200629-v01");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getShapeModelFileBaseName(), "shape/shape");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend("/dimorphos/ideal-impact4-20200629-v01/shape/", "shape0.obj.gz"));
+        assertEquals(c.getResolutionLabels(), ImmutableList.of("3145728 plates"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(3145728));
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, ImageSearchDefaultStartDate);
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, ImageSearchDefaultEndDate);
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 10000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1000.0);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 3);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact4-20200629-v01" + "/draco");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/dart/draco/ideal-impact4-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/dart/draco/ideal-impact4-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("DRACO_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.DRACO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues = imagingConfig.imagingInstruments.get(0).getFillValues();
+        Arrays.sort(fillValues);
+        assertArrayEquals(fillValues, new double[] {-32768.0, -32767.0, 4095.0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact4-20200629-v01" + "/leia");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/dart/leia/ideal-impact4-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), "/dart/leia/ideal-impact4-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("LEIA_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[] { PointingSource.CORRECTED_SPICE, PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.LEIA);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).isTranspose(), true);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues2 = imagingConfig.imagingInstruments.get(1).getFillValues();
+        Arrays.sort(fillValues2);
+        assertArrayEquals(fillValues2, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact4-20200629-v01" + "/luke");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), "/dart/luke/ideal-impact4-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), "/dart/luke/ideal-impact4-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("LUKE_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.LUKE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues3 = imagingConfig.imagingInstruments.get(2).getFillValues();
+        Arrays.sort(fillValues3);
+        assertArrayEquals(fillValues3, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getMaskValues(), new int[] {0,0,0,0});
+
+
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.hasHierarchicalImageSearch(), false);
+
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        assertEquals(spectrumConfig.hasSpectralData, false);
+
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        assertEquals(lidarConfig.hasLidarData, false);
+
+        testStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
+
+        assertArrayEquals(c.presentInMissions, InternalClientsWithDartModels);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+            {
+                new DBRunInfo(PointingSource.SPICE, Instrument.DRACO, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact4-20200629-v01/draco/imagelist-fullpath-info.txt", "dimorphos_ideal_impact4_20200629_v01_draco"),
+                new DBRunInfo(PointingSource.CORRECTED_SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact4-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_ideal_impact4_20200629_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact4-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_ideal_impact4_20200629_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LUKE, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact4-20200629-v01/luke/imagelist-fullpath-info.txt", "dimorphos_ideal_impact4_20200629_v01_luke"),
+    		}
+        );
 	}
 
 	@Test
 	void testDimorphosIdealImpact4RA_20200629_v01()
 	{
-		fail("Not yet implemented");
+		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIMORPHOS, ShapeModelType.provide("ideal-impact4-ra-20210211-v01")));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        String label = "Dimorphos-v004";
+        assertEquals(c.body, ShapeModelBody.DIMORPHOS);
+        assertEquals(c.author, ShapeModelType.provide("ideal-impact4-ra-20210211-v01"));
+        assertEquals(c.modelLabel, "Ideal Impact 4 RA 20210211 v01");
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.system, ShapeModelBody.DIDYMOS_SYSTEM);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.SIMULATED);
+        assertEquals(c.density, 0.0);
+        assertEquals(c.rotationRate, 0.0);
+        assertEquals(c.hasSystemBodies, false);
+        assertEquals(c.systemConfigs, Lists.newArrayList());
+        assertEquals(c.hasDTMs, true);
+        assertEquals(c.hasLineamentData, false);
+        assertEquals(c.hasMapmaker, false);
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.hasCustomBodyCubeSize, false);
+        assertEquals(c.customBodyCubeSize, 0.0);
+        assertEquals(c.useMinimumReferencePotential, false);
+        assertEquals(c.bodyReferencePotential, 0.0);
+        assertEquals(c.getBaseMapConfigName(), "config.txt");
+        assertEquals(c.bodyLowestResModelName, "");
+        assertEquals(c.rootDirOnServer, "/dimorphos/ideal-impact4-ra-20210211-v01");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getShapeModelFileBaseName(), "shape/shape");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend("/dimorphos/ideal-impact4-ra-20210211-v01/shape/", "shape0.obj.gz"));
+        assertEquals(c.getResolutionLabels(), ImmutableList.of("3145728 plates"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(3145728));
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, ImageSearchDefaultStartDate);
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, ImageSearchDefaultEndDate);
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 10000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1000.0);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 3);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact4-ra-20210211-v01" + "/draco");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/dart/draco/ideal-impact4-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/dart/draco/ideal-impact4-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("DRACO_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.DRACO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues = imagingConfig.imagingInstruments.get(0).getFillValues();
+        Arrays.sort(fillValues);
+        assertArrayEquals(fillValues, new double[] {-32768.0, -32767.0, 4095.0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact4-ra-20210211-v01" + "/leia");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/dart/leia/ideal-impact4-ra-20210211-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), "/dart/leia/ideal-impact4-ra-20210211-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("LEIA_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.LEIA);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues2 = imagingConfig.imagingInstruments.get(1).getFillValues();
+        Arrays.sort(fillValues2);
+        assertArrayEquals(fillValues2, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact4-ra-20210211-v01" + "/luke");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), "/dart/luke/ideal-impact4-ra-20210211-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), "/dart/luke/ideal-impact4-ra-20210211-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("LUKE_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.LUKE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 90.0);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.X);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).isTranspose(), false);
+        double[] fillValues3 = imagingConfig.imagingInstruments.get(2).getFillValues();
+        Arrays.sort(fillValues3);
+        assertArrayEquals(fillValues3, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getMaskValues(), new int[] {0,0,0,0});
+
+
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.hasHierarchicalImageSearch(), false);
+
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        assertEquals(spectrumConfig.hasSpectralData, false);
+
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        assertEquals(lidarConfig.hasLidarData, false);
+
+//        testStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
+
+        assertArrayEquals(c.presentInMissions, InternalClientsWithDartModels);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+            {
+                new DBRunInfo(PointingSource.SPICE, Instrument.DRACO, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact4-ra-20210211-v01/draco/imagelist-fullpath-info.txt", "dimorphos_ideal_impact4_ra_20210211_v01_draco"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact4-ra-20210211-v01/leia/imagelist-fullpath-info.txt", "dimorphos_ideal_impact4_ra_20210211_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LUKE, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact4-ra-20210211-v01/luke/imagelist-fullpath-info.txt", "dimorphos_ideal_impact4_ra_20210211_v01_luke"),
+    		}
+        );
 	}
 
 	@Test
 	void testDimorphosIdealImpact5_20200629_v01()
 	{
-		fail("Not yet implemented");
+		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIMORPHOS, ShapeModelType.provide("ideal-impact5-20200629-v01")));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        String label = "Dimorphos-v004";
+        assertEquals(c.body, ShapeModelBody.DIMORPHOS);
+        assertEquals(c.author, ShapeModelType.provide("ideal-impact5-20200629-v01"));
+        assertEquals(c.modelLabel, "Ideal Impact 5 20200629 v01");
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.system, ShapeModelBody.DIDYMOS_SYSTEM);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.SIMULATED);
+        assertEquals(c.density, 0.0);
+        assertEquals(c.rotationRate, 0.0);
+        assertEquals(c.hasSystemBodies, false);
+        assertEquals(c.systemConfigs, Lists.newArrayList());
+        assertEquals(c.hasDTMs, true);
+        assertEquals(c.hasLineamentData, false);
+        assertEquals(c.hasMapmaker, false);
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.hasCustomBodyCubeSize, false);
+        assertEquals(c.customBodyCubeSize, 0.0);
+        assertEquals(c.useMinimumReferencePotential, false);
+        assertEquals(c.bodyReferencePotential, 0.0);
+        assertEquals(c.getBaseMapConfigName(), "config.txt");
+        assertEquals(c.bodyLowestResModelName, "");
+        assertEquals(c.rootDirOnServer, "/dimorphos/ideal-impact5-20200629-v01");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getShapeModelFileBaseName(), "shape/shape");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend("/dimorphos/ideal-impact5-20200629-v01/shape/", "shape0.obj.gz"));
+        assertEquals(c.getResolutionLabels(), ImmutableList.of("3366134 plates"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(3366134));
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, ImageSearchDefaultStartDate);
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, ImageSearchDefaultEndDate);
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 10000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1000.0);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 3);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact5-20200629-v01" + "/draco");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/dart/draco/ideal-impact5-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/dart/draco/ideal-impact5-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("DRACO_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.DRACO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues = imagingConfig.imagingInstruments.get(0).getFillValues();
+        Arrays.sort(fillValues);
+        assertArrayEquals(fillValues, new double[] {-32768.0, -32767.0, 4095.0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact5-20200629-v01" + "/leia");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/dart/leia/ideal-impact5-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), "/dart/leia/ideal-impact5-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("LEIA_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[] { PointingSource.CORRECTED_SPICE, PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.LEIA);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).isTranspose(), true);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues2 = imagingConfig.imagingInstruments.get(1).getFillValues();
+        Arrays.sort(fillValues2);
+        assertArrayEquals(fillValues2, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact5-20200629-v01" + "/luke");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), "/dart/luke/ideal-impact5-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), "/dart/luke/ideal-impact5-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("LUKE_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.LUKE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues3 = imagingConfig.imagingInstruments.get(2).getFillValues();
+        Arrays.sort(fillValues3);
+        assertArrayEquals(fillValues3, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getMaskValues(), new int[] {0,0,0,0});
+
+
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.hasHierarchicalImageSearch(), false);
+
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        assertEquals(spectrumConfig.hasSpectralData, false);
+
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        assertEquals(lidarConfig.hasLidarData, false);
+
+        testStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
+
+        assertArrayEquals(c.presentInMissions, InternalClientsWithDartModels);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+            {
+                new DBRunInfo(PointingSource.SPICE, Instrument.DRACO, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact5-20200629-v01/draco/imagelist-fullpath-info.txt", "dimorphos_ideal_impact5_20200629_v01_draco"),
+                new DBRunInfo(PointingSource.CORRECTED_SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact5-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_ideal_impact5_20200629_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact5-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_ideal_impact5_20200629_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LUKE, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact5-20200629-v01/luke/imagelist-fullpath-info.txt", "dimorphos_ideal_impact5_20200629_v01_luke"),
+    		}
+        );
 	}
 
 	@Test
 	void testDimorphosIdealImpact6_20200629_v01()
 	{
-		fail("Not yet implemented");
+		//NOT USED
+//		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIMORPHOS, ShapeModelType.provide("ideal-impact6-20200629-v01")));
+//		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+//        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+//        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+//        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+//        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+//
+//        String label = "Dimorphos-v004";
+//        assertEquals(c.body, ShapeModelBody.DIMORPHOS);
+//        assertEquals(c.author, ShapeModelType.provide("ideal-impact6-20200629-v01"));
+//        assertEquals(c.modelLabel, "Ideal Impact 6 20200629 v01");
+//        assertEquals(c.type, BodyType.ASTEROID);
+//        assertEquals(c.population, ShapeModelPopulation.NEO);
+//        assertEquals(c.system, ShapeModelBody.DIDYMOS_SYSTEM);
+//        assertEquals(c.dataUsed, ShapeModelDataUsed.SIMULATED);
+//        assertEquals(c.density, 0.0);
+//        assertEquals(c.rotationRate, 0.0);
+//        assertEquals(c.hasSystemBodies, false);
+//        assertEquals(c.systemConfigs, Lists.newArrayList());
+//        assertEquals(c.hasDTMs, true);
+//        assertEquals(c.hasLineamentData, false);
+//        assertEquals(c.hasMapmaker, false);
+//        assertEquals(c.hasColoringData, true);
+//        assertEquals(c.hasCustomBodyCubeSize, false);
+//        assertEquals(c.customBodyCubeSize, 0.0);
+//        assertEquals(c.useMinimumReferencePotential, false);
+//        assertEquals(c.bodyReferencePotential, 0.0);
+//        assertEquals(c.getBaseMapConfigName(), "config.txt");
+//        assertEquals(c.bodyLowestResModelName, "");
+//        assertEquals(c.rootDirOnServer, "/dimorphos/ideal-impact6-20200629-v01");
+//        assertEquals(c.getShapeModelFileExtension(), ".obj");
+//        assertEquals(c.getShapeModelFileBaseName(), "shape/shape");
+//        assertArrayEquals(c.getShapeModelFileNames(), prepend("/dimorphos/ideal-impact6-20200629-v01/shape/", "shape0.obj.gz"));
+//        assertEquals(c.getResolutionLabels(), ImmutableList.of("3145728 plates"));
+//        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(3145728));
+//
+//        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+//        assertEquals(imagingConfig.imageSearchDefaultStartDate, ImageSearchDefaultStartDate);
+//        assertEquals(imagingConfig.imageSearchDefaultEndDate, ImageSearchDefaultEndDate);
+//        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 10000.0);
+//        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1000.0);
+//
+//        assertEquals(imagingConfig.imagingInstruments.size(), 3);
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact6-20200629-v01" + "/draco");
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/dart/draco/ideal-impact6-20200629-v01//images");
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/dart/draco/ideal-impact6-20200629-v01/gallery");
+//        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("DRACO_IMAGE"));
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.DRACO);
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).isTranspose(), true);
+//        double[] fillValues = imagingConfig.imagingInstruments.get(0).getFillValues();
+//        Arrays.sort(fillValues);
+//        assertArrayEquals(fillValues, new double[] {-32768.0, -32767.0, 4095.0});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getLinearInterpolationDims(), new int[] {0,0,0,0});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getMaskValues(), new int[] {0,0,0,0});
+//
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact6-20200629-v01" + "/leia");
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/dart/leia/ideal-impact6-20200629-v01//images");
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), "/dart/leia/ideal-impact6-20200629-v01/gallery");
+//        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("LEIA_IMAGE"));
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[] { PointingSource.CORRECTED_SPICE, PointingSource.SPICE });
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.LEIA);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getRotation(), 270.0);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getFlip(), ImageFlip.NONE);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).isTranspose(), true);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).isTranspose(), true);
+//        double[] fillValues2 = imagingConfig.imagingInstruments.get(1).getFillValues();
+//        Arrays.sort(fillValues2);
+//        assertArrayEquals(fillValues2, new double[] {});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getLinearInterpolationDims(), new int[] {0,0,0,0});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getMaskValues(), new int[] {0,0,0,0});
+//
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact6-20200629-v01" + "/luke");
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), "/dart/luke/ideal-impact6-20200629-v01//images");
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), "/dart/luke/ideal-impact6-20200629-v01/gallery");
+//        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("LUKE_IMAGE"));
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.LUKE);
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).isTranspose(), true);
+//        double[] fillValues3 = imagingConfig.imagingInstruments.get(2).getFillValues();
+//        Arrays.sort(fillValues3);
+//        assertArrayEquals(fillValues3, new double[] {});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getLinearInterpolationDims(), new int[] {0,0,0,0});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getMaskValues(), new int[] {0,0,0,0});
+//
+//
+//        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+//        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+//        assertEquals(imagingConfig.hasHierarchicalImageSearch(), false);
+//
+//        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+//        assertEquals(spectrumConfig.hasSpectralData, false);
+//
+//        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+//        assertEquals(lidarConfig.hasLidarData, false);
+//
+//        testStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
+//
+//        assertArrayEquals(c.presentInMissions, InternalClientsWithDartModels);
+//        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+//
+//        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+//            {
+//                new DBRunInfo(PointingSource.SPICE, Instrument.DRACO, ShapeModelBody.DIMORPHOS.toString(),
+//                		"/dimorphos/ideal-impact6-20200629-v01/draco/imagelist-fullpath-info.txt", "dimorphos_ideal_impact6_20200629_v01_draco"),
+//                new DBRunInfo(PointingSource.CORRECTED_SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+//                		"/dimorphos/ideal-impact6-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_ideal_impact6_20200629_v01_leia"),
+//                new DBRunInfo(PointingSource.SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+//                		"/dimorphos/ideal-impact6-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_ideal_impact6_20200629_v01_leia"),
+//                new DBRunInfo(PointingSource.SPICE, Instrument.LUKE, ShapeModelBody.DIMORPHOS.toString(),
+//                		"/dimorphos/ideal-impact6-20200629-v01/luke/imagelist-fullpath-info.txt", "dimorphos_ideal_impact6_20200629_v01_luke"),
+//    		}
+//        );
 	}
 
 	@Test
 	void testDimorphosIdealImpact9_20200629_v01()
 	{
-		fail("Not yet implemented");
+		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIMORPHOS, ShapeModelType.provide("ideal-impact9-20210630-v01")));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        String label = "Dimorphos-v004";
+        assertEquals(c.body, ShapeModelBody.DIMORPHOS);
+        assertEquals(c.author, ShapeModelType.provide("ideal-impact9-20210630-v01"));
+        assertEquals(c.modelLabel, "Ideal Impact 9 20210630 v01");
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.system, ShapeModelBody.DIDYMOS_SYSTEM);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.SIMULATED);
+        assertEquals(c.density, 0.0);
+        assertEquals(c.rotationRate, 0.0);
+        assertEquals(c.hasSystemBodies, false);
+        assertEquals(c.systemConfigs, Lists.newArrayList());
+        assertEquals(c.hasDTMs, true);
+        assertEquals(c.hasLineamentData, false);
+        assertEquals(c.hasMapmaker, false);
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.hasCustomBodyCubeSize, false);
+        assertEquals(c.customBodyCubeSize, 0.0);
+        assertEquals(c.useMinimumReferencePotential, false);
+        assertEquals(c.bodyReferencePotential, 0.0);
+        assertEquals(c.getBaseMapConfigName(), "config.txt");
+        assertEquals(c.bodyLowestResModelName, "");
+        assertEquals(c.rootDirOnServer, "/dimorphos/ideal-impact9-20210630-v01");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getShapeModelFileBaseName(), "shape/shape");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend("/dimorphos/ideal-impact9-20210630-v01/shape/", "shape0.obj.gz"));
+        assertEquals(c.getResolutionLabels(), ImmutableList.of("3072 plates"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(3072));
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, ImageSearchDefaultStartDate);
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, ImageSearchDefaultEndDate);
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 10000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1000.0);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 3);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact9-20210630-v01" + "/draco");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/dart/draco/ideal-impact9-20210630-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/dart/draco/ideal-impact9-20210630-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("DRACO_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.DRACO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues = imagingConfig.imagingInstruments.get(0).getFillValues();
+        Arrays.sort(fillValues);
+        assertArrayEquals(fillValues, new double[] {-32768.0, -32767.0, 4095.0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact9-20210630-v01" + "/leia");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/dart/leia/ideal-impact9-20210630-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), "/dart/leia/ideal-impact9-20210630-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("LEIA_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.LEIA);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues2 = imagingConfig.imagingInstruments.get(1).getFillValues();
+        Arrays.sort(fillValues2);
+        assertArrayEquals(fillValues2, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), "/dimorphos/ideal-impact9-20210630-v01" + "/luke");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), "/dart/luke/ideal-impact9-20210630-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), "/dart/luke/ideal-impact9-20210630-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("LUKE_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.LUKE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 90.0);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.X);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).isTranspose(), false);
+        double[] fillValues3 = imagingConfig.imagingInstruments.get(2).getFillValues();
+        Arrays.sort(fillValues3);
+        assertArrayEquals(fillValues3, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getMaskValues(), new int[] {0,0,0,0});
+
+
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.hasHierarchicalImageSearch(), false);
+
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        assertEquals(spectrumConfig.hasSpectralData, false);
+
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        assertEquals(lidarConfig.hasLidarData, false);
+
+        testStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
+
+        assertArrayEquals(c.presentInMissions, InternalClientsWithDartModels);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+            {
+                new DBRunInfo(PointingSource.SPICE, Instrument.DRACO, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact9-20210630-v01/draco/imagelist-fullpath-info.txt", "dimorphos_ideal_impact9_20210630_v01_draco"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact9-20210630-v01/leia/imagelist-fullpath-info.txt", "dimorphos_ideal_impact9_20210630_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LUKE, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/ideal-impact9-20210630-v01/luke/imagelist-fullpath-info.txt", "dimorphos_ideal_impact9_20210630_v01_luke"),
+    		}
+        );
 	}
 
 	@Test
@@ -493,7 +1325,7 @@ class DartConfigsTest
 	@Test
 	void testDidymosErrorImpact6_20200629_v01()
 	{
-		fail("Not yet implemented");
+		//NOT USED
 	}
 
 	@Test
@@ -523,31 +1355,506 @@ class DartConfigsTest
 	@Test
 	void testDimorphosErrorImpact4_20200629_v01()
 	{
-		fail("Not yet implemented");
+		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIMORPHOS, ShapeModelType.provide("errors-impact4-20200629-v01")));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        String label = "Dimorphos-v004";
+        assertEquals(c.body, ShapeModelBody.DIMORPHOS);
+        assertEquals(c.author, ShapeModelType.provide("errors-impact4-20200629-v01"));
+        assertEquals(c.modelLabel, "Errors Impact 4 20200629 v01");
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.system, ShapeModelBody.DIDYMOS_SYSTEM);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.SIMULATED);
+        assertEquals(c.density, 0.0);
+        assertEquals(c.rotationRate, 0.0);
+        assertEquals(c.hasSystemBodies, false);
+        assertEquals(c.systemConfigs, Lists.newArrayList());
+        assertEquals(c.hasDTMs, true);
+        assertEquals(c.hasLineamentData, false);
+        assertEquals(c.hasMapmaker, false);
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.hasCustomBodyCubeSize, false);
+        assertEquals(c.customBodyCubeSize, 0.0);
+        assertEquals(c.useMinimumReferencePotential, false);
+        assertEquals(c.bodyReferencePotential, 0.0);
+        assertEquals(c.getBaseMapConfigName(), "config.txt");
+        assertEquals(c.bodyLowestResModelName, "");
+        assertEquals(c.rootDirOnServer, "/dimorphos/errors-impact4-20200629-v01");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getShapeModelFileBaseName(), "shape/shape");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend("/dimorphos/errors-impact4-20200629-v01/shape/", "shape0.obj.gz"));
+        assertEquals(c.getResolutionLabels(), ImmutableList.of("3145728 plates"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(3145728));
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, ImageSearchDefaultStartDate);
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, ImageSearchDefaultEndDate);
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 10000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1000.0);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 3);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/dimorphos/errors-impact4-20200629-v01" + "/draco");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/dart/draco/errors-impact4-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/dart/draco/errors-impact4-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("DRACO_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.DRACO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues = imagingConfig.imagingInstruments.get(0).getFillValues();
+        Arrays.sort(fillValues);
+        assertArrayEquals(fillValues, new double[] {-32768.0, -32767.0, 4095.0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/dimorphos/errors-impact4-20200629-v01" + "/leia");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/dart/leia/errors-impact4-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), "/dart/leia/errors-impact4-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("LEIA_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[] { PointingSource.CORRECTED_SPICE, PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.LEIA);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).isTranspose(), true);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues2 = imagingConfig.imagingInstruments.get(1).getFillValues();
+        Arrays.sort(fillValues2);
+        assertArrayEquals(fillValues2, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), "/dimorphos/errors-impact4-20200629-v01" + "/luke");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), "/dart/luke/errors-impact4-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), "/dart/luke/errors-impact4-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("LUKE_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.LUKE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues3 = imagingConfig.imagingInstruments.get(2).getFillValues();
+        Arrays.sort(fillValues3);
+        assertArrayEquals(fillValues3, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getMaskValues(), new int[] {0,0,0,0});
+
+
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.hasHierarchicalImageSearch(), false);
+
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        assertEquals(spectrumConfig.hasSpectralData, false);
+
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        assertEquals(lidarConfig.hasLidarData, false);
+
+        testStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
+
+        assertArrayEquals(c.presentInMissions, InternalClientsWithDartModels);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+            {
+                new DBRunInfo(PointingSource.SPICE, Instrument.DRACO, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/errors-impact4-20200629-v01/draco/imagelist-fullpath-info.txt", "dimorphos_errors_impact4_20200629_v01_draco"),
+                new DBRunInfo(PointingSource.CORRECTED_SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/errors-impact4-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_errors_impact4_20200629_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/errors-impact4-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_errors_impact4_20200629_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LUKE, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/errors-impact4-20200629-v01/luke/imagelist-fullpath-info.txt", "dimorphos_errors_impact4_20200629_v01_luke"),
+    		}
+        );
 	}
 
 	@Test
 	void testDimorphosErrorImpact4RA_20200629_v01()
 	{
-		fail("Not yet implemented");
+		//DOESN'T EXIST
+//		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIMORPHOS, ShapeModelType.provide("errors-impact4-ra-20210211-v01")));
+//		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+//        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+//        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+//        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+//        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+//
+//        String label = "Dimorphos-v004";
+//        assertEquals(c.body, ShapeModelBody.DIMORPHOS);
+//        assertEquals(c.author, ShapeModelType.provide("errors-impact4-ra-20210211-v01"));
+//        assertEquals(c.modelLabel, "Errors Impact 4 RA 20210211 v01");
+//        assertEquals(c.type, BodyType.ASTEROID);
+//        assertEquals(c.population, ShapeModelPopulation.NEO);
+//        assertEquals(c.system, ShapeModelBody.DIDYMOS_SYSTEM);
+//        assertEquals(c.dataUsed, ShapeModelDataUsed.SIMULATED);
+//        assertEquals(c.density, 0.0);
+//        assertEquals(c.rotationRate, 0.0);
+//        assertEquals(c.hasSystemBodies, false);
+//        assertEquals(c.systemConfigs, Lists.newArrayList());
+//        assertEquals(c.hasDTMs, true);
+//        assertEquals(c.hasLineamentData, false);
+//        assertEquals(c.hasMapmaker, false);
+//        assertEquals(c.hasColoringData, true);
+//        assertEquals(c.hasCustomBodyCubeSize, false);
+//        assertEquals(c.customBodyCubeSize, 0.0);
+//        assertEquals(c.useMinimumReferencePotential, false);
+//        assertEquals(c.bodyReferencePotential, 0.0);
+//        assertEquals(c.getBaseMapConfigName(), "config.txt");
+//        assertEquals(c.bodyLowestResModelName, "");
+//        assertEquals(c.rootDirOnServer, "/dimorphos/errors-impact4-ra-20210211-v01");
+//        assertEquals(c.getShapeModelFileExtension(), ".obj");
+//        assertEquals(c.getShapeModelFileBaseName(), "shape/shape");
+//        assertArrayEquals(c.getShapeModelFileNames(), prepend("/dimorphos/errors-impact4-ra-20210211-v01/shape/", "shape0.obj.gz"));
+//        assertEquals(c.getResolutionLabels(), ImmutableList.of("3145728 plates"));
+//        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(3145728));
+//
+//        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+//        assertEquals(imagingConfig.imageSearchDefaultStartDate, ImageSearchDefaultStartDate);
+//        assertEquals(imagingConfig.imageSearchDefaultEndDate, ImageSearchDefaultEndDate);
+//        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 10000.0);
+//        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1000.0);
+//
+//        assertEquals(imagingConfig.imagingInstruments.size(), 3);
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/dimorphos/errors-impact4-ra-20210211-v01" + "/draco");
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/dart/draco/errors-impact4-20200629-v01//images");
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/dart/draco/errors-impact4-20200629-v01/gallery");
+//        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("DRACO_IMAGE"));
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.DRACO);
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+//        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).isTranspose(), true);
+//        double[] fillValues = imagingConfig.imagingInstruments.get(0).getFillValues();
+//        Arrays.sort(fillValues);
+//        assertArrayEquals(fillValues, new double[] {-32768.0, -32767.0, 4095.0});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getLinearInterpolationDims(), new int[] {0,0,0,0});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getMaskValues(), new int[] {0,0,0,0});
+//
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/dimorphos/errors-impact4-ra-20210211-v01" + "/leia");
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/dart/leia/errors-impact4-ra-20210211-v01//images");
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), "/dart/leia/errors-impact4-ra-20210211-v01/gallery");
+//        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("LEIA_IMAGE"));
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.LEIA);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).isTranspose(), true);
+//        double[] fillValues2 = imagingConfig.imagingInstruments.get(1).getFillValues();
+//        Arrays.sort(fillValues2);
+//        assertArrayEquals(fillValues2, new double[] {});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getLinearInterpolationDims(), new int[] {0,0,0,0});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getMaskValues(), new int[] {0,0,0,0});
+//
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), "/dimorphos/errors-impact4-ra-20210211-v01" + "/luke");
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), "/dart/luke/errors-impact4-ra-20210211-v01//images");
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), "/dart/luke/errors-impact4-ra-20210211-v01/gallery");
+//        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("LUKE_IMAGE"));
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.LUKE);
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 90.0);
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.X);
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).isTranspose(), false);
+//        double[] fillValues3 = imagingConfig.imagingInstruments.get(2).getFillValues();
+//        Arrays.sort(fillValues3);
+//        assertArrayEquals(fillValues3, new double[] {});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getLinearInterpolationDims(), new int[] {0,0,0,0});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getMaskValues(), new int[] {0,0,0,0});
+//
+//
+//        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+//        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+//        assertEquals(imagingConfig.hasHierarchicalImageSearch(), false);
+//
+//        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+//        assertEquals(spectrumConfig.hasSpectralData, false);
+//
+//        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+//        assertEquals(lidarConfig.hasLidarData, false);
+//
+////        testStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
+//
+//        assertArrayEquals(c.presentInMissions, InternalClientsWithDartModels);
+//        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+//
+//        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+//            {
+//                new DBRunInfo(PointingSource.SPICE, Instrument.DRACO, ShapeModelBody.DIMORPHOS.toString(),
+//                		"/dimorphos/errors-impact4-ra-20210211-v01/draco/imagelist-fullpath-info.txt", "dimorphos_errors_impact4_ra_20210211_v01_draco"),
+//                new DBRunInfo(PointingSource.SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+//                		"/dimorphos/errors-impact4-ra-20210211-v01/leia/imagelist-fullpath-info.txt", "dimorphos_errors_impact4_ra_20210211_v01_leia"),
+//                new DBRunInfo(PointingSource.SPICE, Instrument.LUKE, ShapeModelBody.DIMORPHOS.toString(),
+//                		"/dimorphos/errors-impact4-ra-20210211-v01/luke/imagelist-fullpath-info.txt", "dimorphos_errors_impact4_ra_20210211_v01_luke"),
+//    		}
+//        );
 	}
 
 	@Test
-	void testDimorphosErrorImpact5_20200629_v01()
+	void testDimorphoserrorsImpact5_20200629_v01()
 	{
-		fail("Not yet implemented");
+		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIMORPHOS, ShapeModelType.provide("errors-impact5-20200629-v01")));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        String label = "Dimorphos-v004";
+        assertEquals(c.body, ShapeModelBody.DIMORPHOS);
+        assertEquals(c.author, ShapeModelType.provide("errors-impact5-20200629-v01"));
+        assertEquals(c.modelLabel, "Errors Impact 5 20200629 v01");
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.system, ShapeModelBody.DIDYMOS_SYSTEM);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.SIMULATED);
+        assertEquals(c.density, 0.0);
+        assertEquals(c.rotationRate, 0.0);
+        assertEquals(c.hasSystemBodies, false);
+        assertEquals(c.systemConfigs, Lists.newArrayList());
+        assertEquals(c.hasDTMs, true);
+        assertEquals(c.hasLineamentData, false);
+        assertEquals(c.hasMapmaker, false);
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.hasCustomBodyCubeSize, false);
+        assertEquals(c.customBodyCubeSize, 0.0);
+        assertEquals(c.useMinimumReferencePotential, false);
+        assertEquals(c.bodyReferencePotential, 0.0);
+        assertEquals(c.getBaseMapConfigName(), "config.txt");
+        assertEquals(c.bodyLowestResModelName, "");
+        assertEquals(c.rootDirOnServer, "/dimorphos/errors-impact5-20200629-v01");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getShapeModelFileBaseName(), "shape/shape");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend("/dimorphos/errors-impact5-20200629-v01/shape/", "shape0.obj.gz"));
+        assertEquals(c.getResolutionLabels(), ImmutableList.of("3366134 plates"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(3366134));
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, ImageSearchDefaultStartDate);
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, ImageSearchDefaultEndDate);
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 10000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1000.0);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 3);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/dimorphos/errors-impact5-20200629-v01" + "/draco");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/dart/draco/errors-impact5-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/dart/draco/errors-impact5-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("DRACO_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.DRACO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues = imagingConfig.imagingInstruments.get(0).getFillValues();
+        Arrays.sort(fillValues);
+        assertArrayEquals(fillValues, new double[] {-32768.0, -32767.0, 4095.0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/dimorphos/errors-impact5-20200629-v01" + "/leia");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/dart/leia/errors-impact5-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), "/dart/leia/errors-impact5-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("LEIA_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[] { PointingSource.CORRECTED_SPICE, PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.LEIA);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.CORRECTED_SPICE).isTranspose(), true);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues2 = imagingConfig.imagingInstruments.get(1).getFillValues();
+        Arrays.sort(fillValues2);
+        assertArrayEquals(fillValues2, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getMaskValues(), new int[] {0,0,0,0});
+
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), "/dimorphos/errors-impact5-20200629-v01" + "/luke");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), "/dart/luke/errors-impact5-20200629-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), "/dart/luke/errors-impact5-20200629-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("LUKE_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.LUKE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 270.0);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues3 = imagingConfig.imagingInstruments.get(2).getFillValues();
+        Arrays.sort(fillValues3);
+        assertArrayEquals(fillValues3, new double[] {});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getMaskValues(), new int[] {0,0,0,0});
+
+
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.hasHierarchicalImageSearch(), false);
+
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        assertEquals(spectrumConfig.hasSpectralData, false);
+
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        assertEquals(lidarConfig.hasLidarData, false);
+
+        testStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
+
+        assertArrayEquals(c.presentInMissions, InternalClientsWithDartModels);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+            {
+                new DBRunInfo(PointingSource.SPICE, Instrument.DRACO, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/errors-impact5-20200629-v01/draco/imagelist-fullpath-info.txt", "dimorphos_errors_impact5_20200629_v01_draco"),
+                new DBRunInfo(PointingSource.CORRECTED_SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/errors-impact5-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_errors_impact5_20200629_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/errors-impact5-20200629-v01/leia/imagelist-fullpath-info.txt", "dimorphos_errors_impact5_20200629_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LUKE, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/errors-impact5-20200629-v01/luke/imagelist-fullpath-info.txt", "dimorphos_errors_impact5_20200629_v01_luke"),
+    		}
+        );
 	}
 
 	@Test
-	void testDimorphosErrorImpact6_20200629_v01()
+	void testDimorphoserrorsImpact6_20200629_v01()
 	{
-		fail("Not yet implemented");
+		//NOT USED
 	}
 
 	@Test
-	void testDimorphosErrorImpact9_20200629_v01()
+	void testDimorphoserrorsImpact9_20200629_v01()
 	{
-		fail("Not yet implemented");
+		SmallBodyViewConfig c = (SmallBodyViewConfig)(SmallBodyViewConfig.getConfig(ShapeModelBody.DIMORPHOS, ShapeModelType.provide("errors-impact9-20210630-v01")));
+		FeatureConfigIOFactory.getIOForClassType(LidarInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(SpectrumInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+        FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
+
+        String label = "Dimorphos-v004";
+        assertEquals(c.body, ShapeModelBody.DIMORPHOS);
+        assertEquals(c.author, ShapeModelType.provide("errors-impact9-20210630-v01"));
+        assertEquals(c.modelLabel, "Errors Impact 9 20210630 v01");
+        assertEquals(c.type, BodyType.ASTEROID);
+        assertEquals(c.population, ShapeModelPopulation.NEO);
+        assertEquals(c.system, ShapeModelBody.DIDYMOS_SYSTEM);
+        assertEquals(c.dataUsed, ShapeModelDataUsed.SIMULATED);
+        assertEquals(c.density, 0.0);
+        assertEquals(c.rotationRate, 0.0);
+        assertEquals(c.hasSystemBodies, false);
+        assertEquals(c.systemConfigs, Lists.newArrayList());
+        assertEquals(c.hasDTMs, true);
+        assertEquals(c.hasLineamentData, false);
+        assertEquals(c.hasMapmaker, false);
+        assertEquals(c.hasColoringData, true);
+        assertEquals(c.hasCustomBodyCubeSize, false);
+        assertEquals(c.customBodyCubeSize, 0.0);
+        assertEquals(c.useMinimumReferencePotential, false);
+        assertEquals(c.bodyReferencePotential, 0.0);
+        assertEquals(c.getBaseMapConfigName(), "config.txt");
+        assertEquals(c.bodyLowestResModelName, "");
+        assertEquals(c.rootDirOnServer, "/dimorphos/errors-impact9-20210630-v01");
+        assertEquals(c.getShapeModelFileExtension(), ".obj");
+        assertEquals(c.getShapeModelFileBaseName(), "shape/shape");
+        assertArrayEquals(c.getShapeModelFileNames(), prepend("/dimorphos/errors-impact9-20210630-v01/shape/", "shape0.obj.gz"));
+        assertEquals(c.getResolutionLabels(), ImmutableList.of("3072 plates"));
+        assertEquals(c.getResolutionNumberElements(), ImmutableList.of(3072));
+
+        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
+        assertEquals(imagingConfig.imageSearchDefaultStartDate, ImageSearchDefaultStartDate);
+        assertEquals(imagingConfig.imageSearchDefaultEndDate, ImageSearchDefaultEndDate);
+        assertEquals(imagingConfig.imageSearchDefaultMaxSpacecraftDistance, 10000.0);
+        assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1000.0);
+
+        assertEquals(imagingConfig.imagingInstruments.size(), 1);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getRootPath(), "/dimorphos/errors-impact9-20210630-v01" + "/draco");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getDataPath(), "/dart/draco/errors-impact9-20210630-v01//images");
+        assertEquals(imagingConfig.imagingInstruments.get(0).getSearchQuery().getGalleryPath(), "/dart/draco/errors-impact9-20210630-v01/gallery");
+        assertEquals(imagingConfig.imagingInstruments.get(0).spectralMode, SpectralImageMode.MONO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getType(), ImageType.valueOf("DRACO_IMAGE"));
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+        assertEquals(imagingConfig.imagingInstruments.get(0).getInstrumentName(), Instrument.DRACO);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+        assertEquals(imagingConfig.imagingInstruments.get(0).getOrientation(PointingSource.SPICE).isTranspose(), true);
+        double[] fillValues = imagingConfig.imagingInstruments.get(0).getFillValues();
+        Arrays.sort(fillValues);
+        assertArrayEquals(fillValues, new double[] {-32768.0, -32767.0, 4095.0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getLinearInterpolationDims(), new int[] {0,0,0,0});
+        assertArrayEquals(imagingConfig.imagingInstruments.get(0).getMaskValues(), new int[] {0,0,0,0});
+
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/dimorphos/errors-impact9-20210630-v01" + "/leia");
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/dart/leia/errors-impact9-20210630-v01//images");
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), "/dart/leia/errors-impact9-20210630-v01/gallery");
+//        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("LEIA_IMAGE"));
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.LEIA);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
+//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).isTranspose(), true);
+//        double[] fillValues2 = imagingConfig.imagingInstruments.get(1).getFillValues();
+//        Arrays.sort(fillValues2);
+//        assertArrayEquals(fillValues2, new double[] {});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getLinearInterpolationDims(), new int[] {0,0,0,0});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getMaskValues(), new int[] {0,0,0,0});
+//
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), "/dimorphos/errors-impact9-20210630-v01" + "/luke");
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), "/dart/luke/errors-impact9-20210630-v01//images");
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), "/dart/luke/errors-impact9-20210630-v01/gallery");
+//        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("LUKE_IMAGE"));
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] { PointingSource.SPICE });
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.LUKE);
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 90.0);
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.X);
+//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).isTranspose(), false);
+//        double[] fillValues3 = imagingConfig.imagingInstruments.get(2).getFillValues();
+//        Arrays.sort(fillValues3);
+//        assertArrayEquals(fillValues3, new double[] {});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getLinearInterpolationDims(), new int[] {0,0,0,0});
+//        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getMaskValues(), new int[] {0,0,0,0});
+
+
+        assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
+        assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
+        assertEquals(imagingConfig.hasHierarchicalImageSearch(), false);
+
+        SpectrumInstrumentConfig spectrumConfig = (SpectrumInstrumentConfig)c.getConfigForClass(SpectrumInstrumentConfig.class);
+        assertEquals(spectrumConfig.hasSpectralData, false);
+
+        LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
+        assertEquals(lidarConfig.hasLidarData, false);
+
+        testStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
+
+        assertArrayEquals(c.presentInMissions, InternalClientsWithDartModels);
+        assertArrayEquals(c.defaultForMissions, new Mission[] {});
+
+        assertArrayEquals(c.databaseRunInfos, new DBRunInfo[]
+            {
+                new DBRunInfo(PointingSource.SPICE, Instrument.DRACO, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/errors-impact9-20210630-v01/draco/imagelist-fullpath-info.txt", "dimorphos_errors_impact9_20210630_v01_draco"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LEIA, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/errors-impact9-20210630-v01/leia/imagelist-fullpath-info.txt", "dimorphos_errors_impact9_20210630_v01_leia"),
+                new DBRunInfo(PointingSource.SPICE, Instrument.LUKE, ShapeModelBody.DIMORPHOS.toString(),
+                		"/dimorphos/errors-impact9-20210630-v01/luke/imagelist-fullpath-info.txt", "dimorphos_errors_impact9_20210630_v01_luke"),
+    		}
+        );
 	}
 
 	@Test
@@ -634,7 +1941,7 @@ class DartConfigsTest
         LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
         assertEquals(lidarConfig.hasLidarData, false);
 
-        testUpdatedStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
+        testUpdatedStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
 
         assertArrayEquals(c.presentInMissions, ClientsWithDartModels);
         assertArrayEquals(c.defaultForMissions, new Mission[] {});
@@ -727,7 +2034,7 @@ class DartConfigsTest
         LidarInstrumentConfig lidarConfig = (LidarInstrumentConfig)c.getConfigForClass(LidarInstrumentConfig.class);
         assertEquals(lidarConfig.hasLidarData, false);
 
-        testUpdatedStateHistoryParameters(c, ShapeModelBody.DIDYMOS.name());
+        testUpdatedStateHistoryParameters(c, ShapeModelBody.DIMORPHOS.name());
 
         assertArrayEquals(c.presentInMissions, ClientsWithDartModels);
         assertArrayEquals(c.defaultForMissions, DartClients);
