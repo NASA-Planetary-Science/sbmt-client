@@ -3582,39 +3582,6 @@ class DartConfigsTest
         assertArrayEquals(imagingConfig.imagingInstruments.get(0).getLinearInterpolationDims(), new int[] {0,0,0,0});
         assertArrayEquals(imagingConfig.imagingInstruments.get(0).getMaskValues(), new int[] {0,0,0,0});
 
-//        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getRootPath(), "/dimorphos/errors-impact9-20210630-v01" + "/leia");
-//        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getDataPath(), "/dart/leia/errors-impact9-20210630-v01//images");
-//        assertEquals(imagingConfig.imagingInstruments.get(1).getSearchQuery().getGalleryPath(), "/dart/leia/errors-impact9-20210630-v01/gallery");
-//        assertEquals(imagingConfig.imagingInstruments.get(1).spectralMode, SpectralImageMode.MONO);
-//        assertEquals(imagingConfig.imagingInstruments.get(1).getType(), ImageType.valueOf("LEIA_IMAGE"));
-//        assertArrayEquals(imagingConfig.imagingInstruments.get(1).searchImageSources, new PointingSource[] { PointingSource.SPICE });
-//        assertEquals(imagingConfig.imagingInstruments.get(1).getInstrumentName(), Instrument.LEIA);
-//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getRotation(), 0.0);
-//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.NONE);
-//        assertEquals(imagingConfig.imagingInstruments.get(1).getOrientation(PointingSource.SPICE).isTranspose(), true);
-//        double[] fillValues2 = imagingConfig.imagingInstruments.get(1).getFillValues();
-//        Arrays.sort(fillValues2);
-//        assertArrayEquals(fillValues2, new double[] {});
-//        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getLinearInterpolationDims(), new int[] {0,0,0,0});
-//        assertArrayEquals(imagingConfig.imagingInstruments.get(1).getMaskValues(), new int[] {0,0,0,0});
-//
-//        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getRootPath(), "/dimorphos/errors-impact9-20210630-v01" + "/luke");
-//        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getDataPath(), "/dart/luke/errors-impact9-20210630-v01//images");
-//        assertEquals(imagingConfig.imagingInstruments.get(2).getSearchQuery().getGalleryPath(), "/dart/luke/errors-impact9-20210630-v01/gallery");
-//        assertEquals(imagingConfig.imagingInstruments.get(2).spectralMode, SpectralImageMode.MONO);
-//        assertEquals(imagingConfig.imagingInstruments.get(2).getType(), ImageType.valueOf("LUKE_IMAGE"));
-//        assertArrayEquals(imagingConfig.imagingInstruments.get(2).searchImageSources, new PointingSource[] { PointingSource.SPICE });
-//        assertEquals(imagingConfig.imagingInstruments.get(2).getInstrumentName(), Instrument.LUKE);
-//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getRotation(), 90.0);
-//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).getFlip(), ImageFlip.X);
-//        assertEquals(imagingConfig.imagingInstruments.get(2).getOrientation(PointingSource.SPICE).isTranspose(), false);
-//        double[] fillValues3 = imagingConfig.imagingInstruments.get(2).getFillValues();
-//        Arrays.sort(fillValues3);
-//        assertArrayEquals(fillValues3, new double[] {});
-//        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getLinearInterpolationDims(), new int[] {0,0,0,0});
-//        assertArrayEquals(imagingConfig.imagingInstruments.get(2).getMaskValues(), new int[] {0,0,0,0});
-
-
         assertArrayEquals(imagingConfig.imageSearchFilterNames, new String[] {});
         assertArrayEquals(imagingConfig.imageSearchUserDefinedCheckBoxesNames, new String[] {});
         assertEquals(imagingConfig.hasHierarchicalImageSearch(), false);
