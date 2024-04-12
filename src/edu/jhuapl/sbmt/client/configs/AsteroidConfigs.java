@@ -149,7 +149,7 @@ public class AsteroidConfigs extends SmallBodyViewConfig
                         "None",
                         null,
                         new int[] {537, 412},
-                        new int[] {2, 2, 14, 14}
+                        new int[] {16, 16, 16, 16}
                         )
         );
         imagingConfig.imageSearchDefaultStartDate = new GregorianCalendar(2000, 0, 12, 0, 0, 0).getTime();
@@ -186,7 +186,6 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         StateHistoryConfig stateHistoryConfig = (StateHistoryConfig)c.getConfigForClass(StateHistoryConfig.class);
 
         stateHistoryConfig.timeHistoryFile = "/GASKELL/EROS/history/TimeHistory.bth";
-//        c.hasImageMap = true;
 
         stateHistoryConfig.hasStateHistory = true;
         c.shapeModelFileNames = prepend("/EROS", "ver64q.vtk.gz", "ver128q.vtk.gz", "ver256q.vtk.gz", "ver512q.vtk.gz");
