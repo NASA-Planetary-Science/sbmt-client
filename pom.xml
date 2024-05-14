@@ -1,19 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+	<groupId>edu.jhuapl.ses.sbmt</groupId>
 	<artifactId>sbmt-client</artifactId>
-	<version>1.0.7</version> 
+	<version>1.0.0</version> 
 	<name>sbmt-client</name>
 	<description>The Small Body Mapping Tool</description>
 	<dependencies>
-        <!--
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency> 
-		-->
 		<dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -56,74 +48,74 @@
   			<version>4.7.4</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.saavtk</groupId>
+			<groupId>edu.jhuapl.ses.saavtk</groupId>
 			<artifactId>saavtk</artifactId>
-			<version>2.0.1</version> 
+			<version>1.0.0</version> 
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<groupId>edu.jhuapl.ses.sbmt</groupId>
 			<artifactId>sbmt-core</artifactId>
-			<version>1.0.8</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<groupId>edu.jhuapl.ses.sbmt</groupId>
 			<artifactId>sbmt-config</artifactId>
-			<version>1.0.4</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<groupId>edu.jhuapl.ses.sbmt</groupId>
 			<artifactId>sbmt-dem</artifactId>
-			<version>1.0.5</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<groupId>edu.jhuapl.ses.sbmt</groupId>
 			<artifactId>sbmt-image</artifactId>
-			<version>1.2.1</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<groupId>edu.jhuapl.ses.sbmt</groupId>
 			<artifactId>sbmt-layer</artifactId>
-			<version>1.0.4</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<groupId>edu.jhuapl.ses.sbmt</groupId>
 			<artifactId>sbmt-lidar</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<groupId>edu.jhuapl.ses.sbmt</groupId>
 			<artifactId>sbmt-model</artifactId>
-			<version>1.0.4</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<groupId>edu.jhuapl.ses.sbmt</groupId>
 			<artifactId>sbmt-pipeline</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<groupId>edu.jhuapl.ses.sbmt</groupId>
 			<artifactId>sbmt-pointing</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<groupId>edu.jhuapl.ses.sbmt</groupId>
 			<artifactId>sbmt-query</artifactId>
-			<version>1.0.4</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<groupId>edu.jhuapl.ses.sbmt</groupId>
 			<artifactId>sbmt-spectrum</artifactId> 
-			<version>1.0.3</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<groupId>edu.jhuapl.ses.sbmt</groupId>
 			<artifactId>sbmt-stateHistory</artifactId>
-			<version>1.0.4</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+			<groupId>edu.jhuapl.ses.sbmt</groupId>
 			<artifactId>sbmt-util</artifactId>
-			<version>1.0.5</version>
+			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
 		<!-- Repositories, so can be built on checkout without settings.xml file in place -->
