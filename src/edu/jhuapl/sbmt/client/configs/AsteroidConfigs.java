@@ -218,7 +218,10 @@ public class AsteroidConfigs extends SmallBodyViewConfig
         															Mission.DART_DEV,
         															Mission.DART_DEPLOY,
         															Mission.DART_TEST,
-        															Mission.DART_STAGE};
+        															Mission.DART_STAGE,
+        															Mission.LUCY_DEPLOY,
+        															Mission.LUCY_STAGE,
+        															Mission.LUCY_TEST};
 
         c.defaultForMissions = new Mission[] {Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE,
         														Mission.STAGE_APL_INTERNAL, Mission.APL_INTERNAL,

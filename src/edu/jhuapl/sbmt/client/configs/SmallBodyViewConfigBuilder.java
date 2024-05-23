@@ -18,6 +18,7 @@ import edu.jhuapl.sbmt.core.body.BodyType;
 import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
 import edu.jhuapl.sbmt.core.client.Mission;
+import edu.jhuapl.sbmt.core.config.FeatureConfigIOFactory;
 import edu.jhuapl.sbmt.core.config.Instrument;
 import edu.jhuapl.sbmt.core.io.DBRunInfo;
 import edu.jhuapl.sbmt.core.pointing.PointingSource;
@@ -438,9 +439,23 @@ public class SmallBodyViewConfigBuilder
     {
         init();
         SmallBodyViewConfig c = getConfig();
-        ImagingInstrumentConfig imagingConfig = (ImagingInstrumentConfig)c.getConfigForClass(ImagingInstrumentConfig.class);
         Preconditions.checkState(c.body != null, "Must call one of the body(...) methods before calling build");
         Preconditions.checkState(c.author != null, "Must call the model(...) method before calling build");
+
+        ImagingInstrumentConfig imagingConfig = null;
+        if (!imagingInstruments.isEmpty())
+        {
+            imagingConfig = (ImagingInstrumentConfig) c.getConfigForClass(ImagingInstrumentConfig.class);
+            if (imagingConfig == null)
+            {
+                imagingConfig = new ImagingInstrumentConfig(c);
+                c.addFeatureConfig(ImagingInstrumentConfig.class, imagingConfig);
+                FeatureConfigIOFactory.getIOForClassType(ImagingInstrumentConfig.class.getSimpleName()).setViewConfig(c);
+            }
+
+            Preconditions.checkState(imagingConfig.imageSearchDefaultStartDate != null, //
+                    "Must set ALL imaging parameters (start date etc.) befre calling build");
+        }
 
         if (c.rootDirOnServer == null)
         {

@@ -133,6 +133,7 @@ public class SmallBodyViewConfigMetadataIORunner
 		NewHorizonsConfigs.initialize(configArray);
 		RyuguConfigs.initialize(configArray);
 		SaturnConfigs.initialize(configArray);
+		LucyConfigs.initialize(configArray);
 		
 //		SmallBodyViewConfig.initializeWithStaticConfigs(publishedDataOnly);
 		for (IBodyViewConfig each : SmallBodyViewConfig.getBuiltInConfigs())
