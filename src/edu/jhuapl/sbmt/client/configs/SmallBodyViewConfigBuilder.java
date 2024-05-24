@@ -127,24 +127,24 @@ public class SmallBodyViewConfigBuilder
     }
 
     /**
-     * Set the required body-related fields in the config being built. Use this
-     * variant for single-body systems, (or for the main body of a multi-body
-     * system). Use
-     * {@link #body(ShapeModelBody, BodyType, ShapeModelPopulation, ShapeModelBody)}
-     * for bodies that are part of a multi-body system.
-     * <p>
-     * This method (or the other variant) must be called prior to calling
-     * {@link #build()}. The caller must ensure the parameters are
-     * self-consistent.
-     *
-     * @param body the body, e.g., Eros
-     * @param bodyType the body type, i.e., asteroid or comet
-     * @param population the nature of the body's location, e.g. NEO
-     * @return this builder
-     */
+	 * Set the required body-related fields in the config being built. Use this
+	 * variant for single-body systems. Use
+	 * {@link #body(ShapeModelBody, BodyType, ShapeModelPopulation, ShapeModelBody)}
+	 * for bodies that are part of a multi-body system, whether or not the body
+	 * is the main body of the system.
+	 * <p>
+	 * This method (or the other variant) must be called prior to calling
+	 * {@link #build()}. The caller must ensure the parameters are
+	 * self-consistent.
+	 *
+	 * @param body the body, e.g., Eros
+	 * @param bodyType the body type, i.e., asteroid or comet
+	 * @param population the nature of the body's location, e.g. NEO
+	 * @return this builder
+	 */
     public SmallBodyViewConfigBuilder body(ShapeModelBody body, BodyType bodyType, ShapeModelPopulation population)
     {
-        return body(body, bodyType, population, body);
+        return body(body, bodyType, population, null);
     }
 
     /**
