@@ -56,6 +56,11 @@
   			<version>4.7.4</version>
 		</dependency>
 		<dependency>
+			<groupId>edu.jhuapl.ses.jsqrl</groupId>
+			<artifactId>jsqrl</artifactId>
+			<version>0.0.1</version> 
+		</dependency>
+		<dependency>
 			<groupId>edu.jhuapl.ses.srn.saavtk</groupId>
 			<artifactId>saavtk</artifactId>
 			<version>2.0.2-b3-SNAPSHOT</version> 
@@ -63,7 +68,7 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-core</artifactId>
-			<version>1.1.0-b1-SNAPSHOT</version>
+			<version>1.1.0.006-b1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>

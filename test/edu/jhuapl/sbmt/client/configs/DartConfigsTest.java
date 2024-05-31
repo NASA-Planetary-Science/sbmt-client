@@ -80,7 +80,7 @@ import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfigIO;
 
-import crucible.crust.metadata.impl.InstanceGetter;
+import edu.jhuapl.ses.jsqrl.impl.InstanceGetter;
 
 class DartConfigsTest
 {
