@@ -49,13 +49,13 @@ import edu.jhuapl.sbmt.config.SmallBodyViewConfigMetadataIO;
 import edu.jhuapl.sbmt.core.body.BodyType;
 import edu.jhuapl.sbmt.core.body.ShapeModelDataUsed;
 import edu.jhuapl.sbmt.core.body.ShapeModelPopulation;
+import edu.jhuapl.ses.jsqrl.impl.TrackedMetadataManager;
 
-import crucible.crust.metadata.api.Key;
-import crucible.crust.metadata.api.Metadata;
-import crucible.crust.metadata.api.MetadataManager;
-import crucible.crust.metadata.api.Version;
-import crucible.crust.metadata.impl.SettableMetadata;
-import crucible.crust.metadata.impl.TrackedMetadataManager;
+import edu.jhuapl.ses.jsqrl.api.Key;
+import edu.jhuapl.ses.jsqrl.api.Metadata;
+import edu.jhuapl.ses.jsqrl.api.MetadataManager;
+import edu.jhuapl.ses.jsqrl.api.Version;
+import edu.jhuapl.ses.jsqrl.impl.SettableMetadata;
 
 public class SbmtViewManager extends ViewManager
 {

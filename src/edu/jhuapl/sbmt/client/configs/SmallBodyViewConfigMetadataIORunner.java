@@ -58,13 +58,12 @@ import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfigIO;
-
-import crucible.crust.metadata.api.Key;
-import crucible.crust.metadata.api.Metadata;
-import crucible.crust.metadata.api.Version;
-import crucible.crust.metadata.impl.FixedMetadata;
-import crucible.crust.metadata.impl.SettableMetadata;
-import crucible.crust.metadata.impl.gson.Serializers;
+import edu.jhuapl.ses.jsqrl.api.Key;
+import edu.jhuapl.ses.jsqrl.api.Metadata;
+import edu.jhuapl.ses.jsqrl.api.Version;
+import edu.jhuapl.ses.jsqrl.impl.FixedMetadata;
+import edu.jhuapl.ses.jsqrl.impl.SettableMetadata;
+import edu.jhuapl.ses.jsqrl.impl.gson.Serializers;
 
 public class SmallBodyViewConfigMetadataIORunner
 {
