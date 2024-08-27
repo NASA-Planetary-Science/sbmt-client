@@ -54,6 +54,8 @@ public class LucyConfigs
             Mission.LUCY_STAGE, //
     };
 
+    private static final String LlorriInstrumentId = "LLORRI";
+
     /**
      * Add all known configs to the specified {@link ConfigArrayList}.
      *
@@ -62,6 +64,7 @@ public class LucyConfigs
     public static void initialize(ConfigArrayList<IBodyViewConfig> configArray)
     {
         buildDinkineshV001Config(configArray);
+        buildDinkineshV002Config(configArray);
     }
 
     /**
@@ -106,43 +109,174 @@ public class LucyConfigs
         double maxScDistance = 100000000.0;
         double maxResolution = 100000.0;
 
-        Instrument instrumentId = Instrument.LLORRI;
-        ImageType imageType = LlorriImageType;
-        String instrumentName = instrumentId.name();
-        String modelImageDir = DBRunInfo.createServerPath(modelTopDir, instrumentName);
-        String imageDataDir = DBRunInfo.createServerPath(missionName, instrumentName);
-        String tablePrefix = DBRunInfo.createTablePrefix(body.name(), modelId.name(), instrumentName);
+        {
+            Instrument instrument = Instrument.valueFor(LlorriInstrumentId);
+            ImageType imageType = LlorriImageType;
+            String modelImageDir = DBRunInfo.createServerPath(modelTopDir, LlorriInstrumentId);
+            String imageDataDir = DBRunInfo.createServerPath(missionName, LlorriInstrumentId);
+            String tablePrefix = DBRunInfo.createTablePrefix(body.name(), modelId.name(), LlorriInstrumentId);
 
-        DataQuerySourcesMetadata metadata = DataQuerySourcesMetadata.of(modelImageDir, imageDataDir
-                + "/images", tablePrefix, tablePrefix, imageDataDir + "/gallery");
-        IDataQuery searchQuery = new ImageDataQuery(metadata);
+            DataQuerySourcesMetadata metadata = DataQuerySourcesMetadata.of(modelImageDir, imageDataDir
+                    + "/images", tablePrefix, tablePrefix, imageDataDir + "/gallery");
+            IDataQuery searchQuery = new ImageDataQuery(metadata);
 
-        PointingSource[] searchImageSources = { PointingSource.GASKELL, PointingSource.SPICE };
+            PointingSource[] searchImageSources = { PointingSource.GASKELL, PointingSource.SPICE };
 
-        // If a single combination of rotation, flip, and transpose work for
-        // both image sources, just use those and leave the map == null. If not,
-        // create and populate the orientationMap; rotation, flip and transpose
-        // will then be ignored.
-        double rotation = 0.0;
-        String flip = "None";
-        boolean transpose = false;
-        Map<PointingSource, Orientation> orientationMap = null;
+            // If a single combination of rotation, flip, and transpose work for
+            // both image sources, just use those and leave the map == null. If not,
+            // create and populate the orientationMap; rotation, flip and transpose
+            // will then be ignored.
+            double rotation = 0.0;
+            String flip = "None";
+            boolean transpose = false;
+            Map<PointingSource, Orientation> orientationMap = null;
 
-        Collection<Float> fillValues = null;
-        int[] linearInterpDims = null;
-        int[] maskValues = null;
+            Collection<Float> fillValues = null;
+            int[] linearInterpDims = null;
+            int[] maskValues = null;
 
-        ImagingInstrument instrument =
-                new ImagingInstrument(SpectralImageMode.MONO, searchQuery, imageType, searchImageSources, instrumentId, rotation, flip, fillValues, linearInterpDims, maskValues, transpose, orientationMap);
+            ImagingInstrument imagingInstrument =
+                    new ImagingInstrument(SpectralImageMode.MONO, searchQuery, imageType, searchImageSources, instrument, rotation, flip, fillValues, linearInterpDims, maskValues, transpose, orientationMap);
 
-        DBRunInfo spcDbInfo =
-                DBRunInfo.fromModelImageDir(PointingSource.GASKELL, instrumentId, body.toString(), modelImageDir, tablePrefix);
-        DBRunInfo spiceDbInfo =
-                DBRunInfo.fromModelImageDir(PointingSource.SPICE, instrumentId, body.toString(), modelImageDir, tablePrefix);
-        DBRunInfo[] runInfos = new DBRunInfo[] { spcDbInfo, spiceDbInfo };
+            DBRunInfo spcDbInfo =
+                    DBRunInfo.fromModelImageDir(PointingSource.GASKELL, instrument, body.toString(), modelImageDir, tablePrefix);
+            DBRunInfo spiceDbInfo =
+                    DBRunInfo.fromModelImageDir(PointingSource.SPICE, instrument, body.toString(), modelImageDir, tablePrefix);
+            DBRunInfo[] runInfos = new DBRunInfo[] { spcDbInfo, spiceDbInfo };
 
-        builder.imageSearchRanges(startDate, endDate, maxScDistance, maxResolution);
-        builder.add(instrument, runInfos);
+            builder.imageSearchRanges(startDate, endDate, maxScDistance, maxResolution);
+            builder.add(imagingInstrument, runInfos);
+        }
+
+        // Final details.
+        builder.clients(InternalClientsWithLucyModels);
+
+        SmallBodyViewConfig c = builder.build();
+        c.defaultForMissions = LucyClients;
+        configArray.add(c);
+    }
+
+    /**
+     * Configure the single resolution LUCY Dinkinesh V002 model delivered 2024-08-21. Number of facets determined by inspection of
+     * OBJ files. See GitLab issue sbmt/missions/sbmt-ddap#186,
+     *
+     * @param configArray list of configs to which to add the configs if they are are not already present
+     */
+    private static void buildDinkineshV002Config(ConfigArrayList<IBodyViewConfig> configArray)
+    {
+        String missionName = MissionName;
+
+        // This section contains all the model-specific attributes.
+        String modelLabel = "Lucy Dinkinesh V002";
+        String modelName = DBRunInfo.createServerPath(modelLabel);
+        String modelTopDir = DBRunInfo.createServerPath("/dinkinesh", modelName);
+        List<Integer> resolutions = ImmutableList.of(126672, 223918, 502600);
+        double density = 2200.0;
+        double rotationRate = 0.00046704;
+
+        // This section should be common to most, if not all Lucy models.
+        ShapeModelBody body = ShapeModelBody.DINKINESH;
+        ShapeModelType modelId = ShapeModelType.provide(modelName);
+
+        SmallBodyViewConfigBuilder builder = new SmallBodyViewConfigBuilder();
+
+        // TODO: after branches are merged, should be safe and preferable to do
+        // this instead of the 4-argument overload of this method:
+        // builder.body(body, BodyType.ASTEROID, ShapeModelPopulation.MAIN_BELT);
+        builder.body(body, BodyType.ASTEROID, ShapeModelPopulation.MAIN_BELT, null);
+
+        builder.model(modelId, ShapeModelDataUsed.IMAGE_BASED, modelLabel);
+        builder.modelTopDir(modelTopDir);
+
+        builder.modelRes(resolutions);
+        builder.gravityInputs(density, rotationRate);
+
+        // This section should be common to models that have LLORRI images,
+        // assuming both SPC and SPICE pointings are available.
+        Date startDate = new GregorianCalendar(2023, 10, 1, 16, 44, 39).getTime();
+        Date endDate = new GregorianCalendar(2023, 10, 1, 17, 17, 42).getTime();
+        double maxScDistance = 100000000.0;
+        double maxResolution = 100000.0;
+
+        {
+            String calibration = "Calibrated";
+            Instrument instrument = Instrument.valueFor(LlorriInstrumentId + " " + calibration);
+            ImageType imageType = LlorriImageType;
+            String modelImageDir = DBRunInfo.createServerPath(modelTopDir, LlorriInstrumentId, calibration);
+            String imageDataDir = DBRunInfo.createServerPath(missionName, LlorriInstrumentId, calibration);
+            String tablePrefix = DBRunInfo.createTablePrefix(body.name(), modelId.name(), LlorriInstrumentId, calibration);
+
+            DataQuerySourcesMetadata metadata = DataQuerySourcesMetadata.of(modelImageDir, imageDataDir
+                    + "/images", tablePrefix, tablePrefix, imageDataDir + "/gallery");
+            IDataQuery searchQuery = new ImageDataQuery(metadata);
+
+            PointingSource[] searchImageSources = { PointingSource.GASKELL, PointingSource.SPICE };
+
+            // If a single combination of rotation, flip, and transpose work for
+            // both image sources, just use those and leave the map == null. If not,
+            // create and populate the orientationMap; rotation, flip and transpose
+            // will then be ignored.
+            double rotation = 0.0;
+            String flip = "None";
+            boolean transpose = false;
+            Map<PointingSource, Orientation> orientationMap = null;
+
+            Collection<Float> fillValues = null;
+            int[] linearInterpDims = null;
+            int[] maskValues = null;
+
+            ImagingInstrument imagingInstrument =
+                    new ImagingInstrument(SpectralImageMode.MONO, searchQuery, imageType, searchImageSources, instrument, rotation, flip, fillValues, linearInterpDims, maskValues, transpose, orientationMap);
+
+            DBRunInfo spcDbInfo =
+                    DBRunInfo.fromModelImageDir(PointingSource.GASKELL, instrument, body.toString(), modelImageDir, tablePrefix);
+            DBRunInfo spiceDbInfo =
+                    DBRunInfo.fromModelImageDir(PointingSource.SPICE, instrument, body.toString(), modelImageDir, tablePrefix);
+            DBRunInfo[] runInfos = new DBRunInfo[] { spcDbInfo, spiceDbInfo };
+
+            builder.imageSearchRanges(startDate, endDate, maxScDistance, maxResolution);
+            builder.add(imagingInstrument, runInfos);
+        }
+
+        {
+            String calibration = "Deconvolved";
+            Instrument instrument = Instrument.valueFor(LlorriInstrumentId + " " + calibration);
+            ImageType imageType = LlorriImageType;
+            String modelImageDir = DBRunInfo.createServerPath(modelTopDir, LlorriInstrumentId, calibration);
+            String imageDataDir = DBRunInfo.createServerPath(missionName, LlorriInstrumentId, calibration);
+            String tablePrefix = DBRunInfo.createTablePrefix(body.name(), modelId.name(), LlorriInstrumentId, calibration);
+
+            DataQuerySourcesMetadata metadata = DataQuerySourcesMetadata.of(modelImageDir, imageDataDir
+                    + "/images", tablePrefix, tablePrefix, imageDataDir + "/gallery");
+            IDataQuery searchQuery = new ImageDataQuery(metadata);
+
+            PointingSource[] searchImageSources = { PointingSource.GASKELL, PointingSource.SPICE };
+
+            // If a single combination of rotation, flip, and transpose work for
+            // both image sources, just use those and leave the map == null. If not,
+            // create and populate the orientationMap; rotation, flip and transpose
+            // will then be ignored.
+            double rotation = 0.0;
+            String flip = "None";
+            boolean transpose = false;
+            Map<PointingSource, Orientation> orientationMap = null;
+
+            Collection<Float> fillValues = null;
+            int[] linearInterpDims = null;
+            int[] maskValues = null;
+
+            ImagingInstrument imagingInstrument =
+                    new ImagingInstrument(SpectralImageMode.MONO, searchQuery, imageType, searchImageSources, instrument, rotation, flip, fillValues, linearInterpDims, maskValues, transpose, orientationMap);
+
+            DBRunInfo spcDbInfo =
+                    DBRunInfo.fromModelImageDir(PointingSource.GASKELL, instrument, body.toString(), modelImageDir, tablePrefix);
+            DBRunInfo spiceDbInfo =
+                    DBRunInfo.fromModelImageDir(PointingSource.SPICE, instrument, body.toString(), modelImageDir, tablePrefix);
+            DBRunInfo[] runInfos = new DBRunInfo[] { spcDbInfo, spiceDbInfo };
+
+            builder.imageSearchRanges(startDate, endDate, maxScDistance, maxResolution);
+            builder.add(imagingInstrument, runInfos);
+        }
 
         // Final details.
         builder.clients(InternalClientsWithLucyModels);
