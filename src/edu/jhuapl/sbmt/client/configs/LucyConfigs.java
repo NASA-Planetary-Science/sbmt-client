@@ -200,7 +200,8 @@ public class LucyConfigs
 
         {
             String calibration = "Calibrated";
-            Instrument instrument = Instrument.valueFor(LlorriInstrumentId + " " + calibration);
+            Instrument instrument = Instrument.valueFor(LlorriInstrumentId + "_" + calibration);
+            String instLabel = LlorriInstrumentId + " " + calibration;
             ImageType imageType = LlorriImageType;
             String modelImageDir = DBRunInfo.createServerPath(modelTopDir, LlorriInstrumentId, calibration);
             String imageDataDir = DBRunInfo.createServerPath(missionName, LlorriInstrumentId, calibration);
@@ -226,7 +227,9 @@ public class LucyConfigs
             int[] maskValues = null;
 
             ImagingInstrument imagingInstrument =
-                    new ImagingInstrument(SpectralImageMode.MONO, searchQuery, imageType, searchImageSources, instrument, rotation, flip, fillValues, linearInterpDims, maskValues, transpose, orientationMap);
+                    new ImagingInstrument(SpectralImageMode.MONO, searchQuery, imageType, searchImageSources, //
+                            instrument, instLabel, //
+                            rotation, flip, fillValues, linearInterpDims, maskValues, transpose, orientationMap);
 
             DBRunInfo spcDbInfo =
                     DBRunInfo.fromModelImageDir(PointingSource.GASKELL, instrument, body.toString(), modelImageDir, tablePrefix);
@@ -240,7 +243,8 @@ public class LucyConfigs
 
         {
             String calibration = "Deconvolved";
-            Instrument instrument = Instrument.valueFor(LlorriInstrumentId + " " + calibration);
+            Instrument instrument = Instrument.valueFor(LlorriInstrumentId + "_" + calibration);
+            String instLabel = LlorriInstrumentId + " " + calibration;
             ImageType imageType = LlorriImageType;
             String modelImageDir = DBRunInfo.createServerPath(modelTopDir, LlorriInstrumentId, calibration);
             String imageDataDir = DBRunInfo.createServerPath(missionName, LlorriInstrumentId, calibration);
@@ -266,7 +270,9 @@ public class LucyConfigs
             int[] maskValues = null;
 
             ImagingInstrument imagingInstrument =
-                    new ImagingInstrument(SpectralImageMode.MONO, searchQuery, imageType, searchImageSources, instrument, rotation, flip, fillValues, linearInterpDims, maskValues, transpose, orientationMap);
+                    new ImagingInstrument(SpectralImageMode.MONO, searchQuery, imageType, searchImageSources, //
+                            instrument, instLabel, //
+                            rotation, flip, fillValues, linearInterpDims, maskValues, transpose, orientationMap);
 
             DBRunInfo spcDbInfo =
                     DBRunInfo.fromModelImageDir(PointingSource.GASKELL, instrument, body.toString(), modelImageDir, tablePrefix);
