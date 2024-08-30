@@ -199,7 +199,11 @@ public class LucyConfigs
         double maxResolution = 100000.0;
 
         {
+            // NOTE THERE ARE TWO DIFFERENCES BETWEEN THE TWO IMAGING INSTRUMENTS:
+            // CALIBRATION AND FLIP!!!!!
             String calibration = "Calibrated";
+            String flip = "None";
+
             Instrument instrument = Instrument.valueFor(LlorriInstrumentId + "_" + calibration);
             String instLabel = LlorriInstrumentId + " " + calibration;
             ImageType imageType = LlorriImageType;
@@ -213,12 +217,7 @@ public class LucyConfigs
 
             PointingSource[] searchImageSources = { PointingSource.GASKELL, PointingSource.SPICE };
 
-            // If a single combination of rotation, flip, and transpose work for
-            // both image sources, just use those and leave the map == null. If not,
-            // create and populate the orientationMap; rotation, flip and transpose
-            // will then be ignored.
             double rotation = 0.0;
-            String flip = "None";
             boolean transpose = false;
             Map<PointingSource, Orientation> orientationMap = null;
 
@@ -242,7 +241,11 @@ public class LucyConfigs
         }
 
         {
+            // NOTE THERE ARE TWO DIFFERENCES BETWEEN THE TWO IMAGING INSTRUMENTS:
+            // CALIBRATION AND FLIP!!!!!
             String calibration = "Deconvolved";
+            String flip = "X";
+
             Instrument instrument = Instrument.valueFor(LlorriInstrumentId + "_" + calibration);
             String instLabel = LlorriInstrumentId + " " + calibration;
             ImageType imageType = LlorriImageType;
@@ -256,12 +259,7 @@ public class LucyConfigs
 
             PointingSource[] searchImageSources = { PointingSource.GASKELL, PointingSource.SPICE };
 
-            // If a single combination of rotation, flip, and transpose work for
-            // both image sources, just use those and leave the map == null. If not,
-            // create and populate the orientationMap; rotation, flip and transpose
-            // will then be ignored.
             double rotation = 0.0;
-            String flip = "None";
             boolean transpose = false;
             Map<PointingSource, Orientation> orientationMap = null;
 
