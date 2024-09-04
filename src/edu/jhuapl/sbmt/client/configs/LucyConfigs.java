@@ -29,7 +29,7 @@ import edu.jhuapl.sbmt.query.v2.DataQuerySourcesMetadata;
 import edu.jhuapl.sbmt.query.v2.IDataQuery;
 
 /**
- * Configurations for the Earth-Moon system.
+ * Configurations for the Lucy mission.
  *
  * @author James.Peachey@jhuapl.edu
  *
@@ -63,8 +63,13 @@ public class LucyConfigs
      */
     public static void initialize(ConfigArrayList<IBodyViewConfig> configArray)
     {
+        final SmallBodyViewConfig defaultConfig;
+
         buildDinkineshV001Config(configArray);
-        buildDinkineshV002Config(configArray);
+
+        defaultConfig = buildDinkineshV002Config(configArray);
+
+        defaultConfig.defaultForMissions = LucyClients;
     }
 
     /**
@@ -72,8 +77,9 @@ public class LucyConfigs
      * OBJ file. See GitLab issue sbmt/missions/sbmt-ddap#127,
      *
      * @param configArray list of configs to which to add the configs if they are are not already present
+     * @return the config that was created and added
      */
-    private static void buildDinkineshV001Config(ConfigArrayList<IBodyViewConfig> configArray)
+    private static SmallBodyViewConfig buildDinkineshV001Config(ConfigArrayList<IBodyViewConfig> configArray)
     {
         String missionName = MissionName;
 
@@ -152,8 +158,9 @@ public class LucyConfigs
         builder.clients(InternalClientsWithLucyModels);
 
         SmallBodyViewConfig c = builder.build();
-        c.defaultForMissions = LucyClients;
         configArray.add(c);
+
+        return c;
     }
 
     /**
@@ -161,8 +168,9 @@ public class LucyConfigs
      * OBJ files. See GitLab issue sbmt/missions/sbmt-ddap#186,
      *
      * @param configArray list of configs to which to add the configs if they are are not already present
+     * @return the config that was created and added
      */
-    private static void buildDinkineshV002Config(ConfigArrayList<IBodyViewConfig> configArray)
+    private static SmallBodyViewConfig buildDinkineshV002Config(ConfigArrayList<IBodyViewConfig> configArray)
     {
         String missionName = MissionName;
 
@@ -286,8 +294,9 @@ public class LucyConfigs
         builder.clients(InternalClientsWithLucyModels);
 
         SmallBodyViewConfig c = builder.build();
-        c.defaultForMissions = LucyClients;
         configArray.add(c);
+
+        return c;
     }
 
     /**
