@@ -32,37 +32,39 @@ public class NIRS3Preprocessor
 
         for (int m=0; m<fitFiles.size(); m++)
         {
-            Fits f = new Fits(basedir+"/fit/"+fitFiles.get(m));// FileCache.getFileFromServer(filename));
-            BasicHDU hdu = f.read()[0];
-            int[] axes = hdu.getAxes();
-            float[][] data = (float[][]) hdu.getData().getData();
+			Fits f = new Fits(basedir + "/fit/" + fitFiles.get(m));
+			BasicHDU<?> hdu = f.read()[0];
+			int[] axes = hdu.getAxes();
+			float[][] data = (float[][]) hdu.getData().getData();
 
-            String date=hdu.getHeader().getStringValue("DATE-OBS");
+			String date = hdu.getHeader().getStringValue("DATE-OBS");
 
-            String utStrCard=hdu.getHeader().findKey("UT-STR");
-            String utEndCard=hdu.getHeader().findKey("UT-END");
+			String utStrCard = hdu.getHeader().findKey("UT-STR");
+			String utEndCard = hdu.getHeader().findKey("UT-END");
 
-            String[] utStrTokens=utStrCard.split("\\s+");
-            String[] utEndTokens=utEndCard.split("\\s+");
+			String[] utStrTokens = utStrCard.split("\\s+");
+			String[] utEndTokens = utEndCard.split("\\s+");
 
-            String utStr=utStrTokens[2];
-            String utEnd=utEndTokens[2];
+			String utStr = utStrTokens[2];
+			String utEnd = utEndTokens[2];
 
-            // XXX: right now it is assumed that none of the time intervals span midnight!!!
-            double etStart=TimeUtil.str2et(date+"T"+utStr);
-            double etEnd=TimeUtil.str2et(date+"T"+utEnd);
+			// XXX: right now it is assumed that none of the time intervals span
+			// midnight!!!
+			double etStart = TimeUtil.str2et(date + "T" + utStr);
+			double etEnd = TimeUtil.str2et(date + "T" + utEnd);
 
             //String spectFileName=filename.replace(oldChar, newChar)
             for (int j=0; j<axes[0]; j++)
             {
                 double etNow=(etEnd-etStart)*((double)j/((double)axes[1]-1))+etStart;   // there is no explicit time per spectrum, so we just assume linearly increasing time from the given start and end in the .fit file
-                String filename=basedir+"/spect/"+String.valueOf((long)etNow)+"_NIRS3.spect";
-                FileWriter writer=new FileWriter(new File(filename));
-                writer.write(etNow+" ");
-                for (int i=0; i<axes[1]; i++)
-                    writer.write(data[j][i]+" ");
-                writer.close();
+				String filename = basedir + "/spect/" + String.valueOf((long) etNow) + "_NIRS3.spect";
+				FileWriter writer = new FileWriter(new File(filename));
+				writer.write(etNow + " ");
+				for (int i = 0; i < axes[1]; i++)
+					writer.write(data[j][i] + " ");
+				writer.close();
             }
+            f.close();
         }
     }
 }

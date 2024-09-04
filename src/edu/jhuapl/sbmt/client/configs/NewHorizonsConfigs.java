@@ -62,7 +62,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 
 	public static void initialize(ConfigArrayList<IBodyViewConfig> configArray)
     {
-        NewHorizonsConfigs c = new NewHorizonsConfigs();
+//        NewHorizonsConfigs c = new NewHorizonsConfigs();
 
 
         /* Older unused configs
@@ -98,6 +98,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
 	{
 		ImagingInstrument lorriInstrument = null;
 		ImagingInstrument mvicInstrument = null;
+		@SuppressWarnings("unused")
 		ImagingInstrument leisaInstrument = null;	//currently unused but will be eventually
 		imagingConfig.imagingInstruments = Lists.newArrayList();
 		if (lorriMetadata != null)
@@ -393,6 +394,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
         configArray.add(c);
     }
 
+	@SuppressWarnings("unused")
 	private static void buildJupiterConfig(ConfigArrayList<IBodyViewConfig> configArray)
 	{
 		NewHorizonsConfigs c = new NewHorizonsConfigs();
@@ -447,6 +449,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
         configArray.add(c);
     }
 
+	@SuppressWarnings("unused")
 	private static void buildAmaltheaConfig(ConfigArrayList<IBodyViewConfig> configArray)
 	{
 		NewHorizonsConfigs c = new NewHorizonsConfigs();
@@ -463,6 +466,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
         configArray.add(c);
 	}
 
+	@SuppressWarnings("unused")
 	private static void buildCallistoConfig(ConfigArrayList<IBodyViewConfig> configArray)
 	{
 		NewHorizonsConfigs c = new NewHorizonsConfigs();
@@ -495,6 +499,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
         configArray.add(c);
     }
 
+	@SuppressWarnings("unused")
 	private static void buildEuropaConfig(ConfigArrayList<IBodyViewConfig> configArray)
 	{
 		NewHorizonsConfigs c = new NewHorizonsConfigs();
@@ -542,6 +547,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
         configArray.add(c);
     }
 
+	@SuppressWarnings("unused")
 	private static void buildGanymedeConfig(ConfigArrayList<IBodyViewConfig> configArray)
 	{
 		NewHorizonsConfigs c = new NewHorizonsConfigs();
@@ -588,6 +594,7 @@ public class NewHorizonsConfigs extends SmallBodyViewConfig
         configArray.add(c);
     }
 
+	@SuppressWarnings("unused")
 	private static void buildIOConfig(ConfigArrayList<IBodyViewConfig> configArray)
 	{
 		NewHorizonsConfigs c = new NewHorizonsConfigs();

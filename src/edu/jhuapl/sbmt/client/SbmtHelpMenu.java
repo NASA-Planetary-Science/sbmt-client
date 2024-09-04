@@ -56,10 +56,9 @@ public class SbmtHelpMenu extends HelpMenu
 
     protected void showHelp()
     {
-        String helpRootUrl = Configuration.getHelpRootURL();
         try
         {
-            java.awt.Desktop.getDesktop().browse(java.net.URI.create("https://sbmt.jhuapl.edu/index.php#help"));
+            Desktop.getDesktop().browse(java.net.URI.create("https://sbmt.jhuapl.edu/index.php#help"));
         }
         catch (IOException e)
         {
@@ -69,10 +68,9 @@ public class SbmtHelpMenu extends HelpMenu
 
     protected void showDataSources()
     {
-        String helpRootUrl = Configuration.getHelpRootURL();
         try
         {
-            java.awt.Desktop.getDesktop().browse(java.net.URI.create("https://sbmt.jhuapl.edu/index.php#data"));
+            Desktop.getDesktop().browse(java.net.URI.create("https://sbmt.jhuapl.edu/index.php#data"));
         }
         catch (IOException e)
         {
@@ -82,10 +80,9 @@ public class SbmtHelpMenu extends HelpMenu
 
     protected void showRecentChanges()
     {
-        String helpRootUrl = Configuration.getHelpRootURL();
         try
         {
-           java.awt.Desktop.getDesktop().browse(java.net.URI.create("https://sbmt.jhuapl.edu/Release-Notes.php"));
+           Desktop.getDesktop().browse(java.net.URI.create("https://sbmt.jhuapl.edu/Release-Notes.php"));
         }
         catch (IOException e)
         {
@@ -95,10 +92,9 @@ public class SbmtHelpMenu extends HelpMenu
 
     protected void showTutorial()
     {
-        String helpRootUrl = Configuration.getHelpRootURL();
         try
         {
-           java.awt.Desktop.getDesktop().browse(java.net.URI.create("https://sbmt.jhuapl.edu/Tutorials.php"));
+           Desktop.getDesktop().browse(java.net.URI.create("https://sbmt.jhuapl.edu/Tutorials.php"));
         }
         catch (IOException e)
         {

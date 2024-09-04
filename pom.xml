@@ -120,7 +120,7 @@
 		<dependency>
 			<groupId>edu.jhuapl.ses.srn.sbmt</groupId>
 			<artifactId>sbmt-util</artifactId>
-			<version>1.0.11</version> 
+			<version>1.0.11</version>  
 		</dependency>
 	</dependencies>
 		<!-- Repositories, so can be built on checkout without settings.xml file in place -->

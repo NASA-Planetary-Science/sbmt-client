@@ -25,11 +25,13 @@ import edu.jhuapl.sbmt.model.eros.nis.NISSpectrumMath;
 import edu.jhuapl.sbmt.model.eros.nis.NisQuery;
 import edu.jhuapl.sbmt.model.phobos.MEGANE;
 import edu.jhuapl.sbmt.model.phobos.MEGANEQuery;
+import edu.jhuapl.sbmt.model.phobos.MEGANESpectrum;
 import edu.jhuapl.sbmt.model.phobos.MEGANESpectrumMath;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3Query;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SearchModel;
 import edu.jhuapl.sbmt.model.ryugu.nirs3.NIRS3SpectrumMath;
+import edu.jhuapl.sbmt.model.ryugu.nirs3.atRyugu.NIRS3Spectrum;
 import edu.jhuapl.sbmt.spectrum.SbmtSpectrumModelFactory;
 import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfig;
 import edu.jhuapl.sbmt.spectrum.model.core.BasicSpectrum;
@@ -51,7 +53,7 @@ import edu.jhuapl.sbmt.spectrum.service.SpectrumSearchModelBuilder;
  * configuration options and then calls the public (non-APL) version's main
  * function.
  */
-public class SmallBodyMappingToolAPL
+ public class SmallBodyMappingToolAPL
 {
 	// TODO: This needs a new home
 	static
@@ -136,26 +138,6 @@ public class SmallBodyMappingToolAPL
 						NISSpectrum spectrum = new NISSpectrum(str,
 								spectrumConfig.getHierarchicalSpectraSearchSpecification(),
 								smallBodyModel.getBoundingBoxDiagonalLength(), instrument);
-//					String str = path;
-//		            String strippedFileName = str.substring(str.lastIndexOf("/NIS/2000/") + 10);
-//		            System.out.println(
-//							"NEARSpectraFactory.initializeModels(...).new SpectrumBuilder() {...}: buildSpectrum: stripped file name " + strippedFileName);
-//		            String detailedTime = NISSearchModel.nisFileToObservationTimeMap.get(strippedFileName);
-//		            System.out.println(
-//							"NEARSpectraFactory.initializeModels(...).new SpectrumBuilder() {...}: buildSpectrum: detailed time " + detailedTime);
-//		            List<String> result = new ArrayList<String>();
-//		            result.add(str);
-//		            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-//		            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-//		            try
-//					{
-//						spectrum.setDateTime(new DateTime(sdf.parse(detailedTime).getTime()));
-//					}
-//		            catch (ParseException e)
-//					{
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
 
 						return spectrum;
 					}
@@ -165,7 +147,7 @@ public class SmallBodyMappingToolAPL
 		{
 
 			@Override
-			public ISpectrumSearchModel buildSearchModel(double diagonalLength)
+			public ISpectrumSearchModel<OTESSpectrum> buildSearchModel(double diagonalLength)
 			{
 				return new OTESSearchModel(SpectrumInstrumentFactory.getInstrumentForName("OTES"));
 			}
@@ -176,21 +158,21 @@ public class SmallBodyMappingToolAPL
 				{
 
 					@Override
-					public IBasicSpectrumRenderer buildSpectrumRenderer(BasicSpectrum spectrum,
+					public IBasicSpectrumRenderer<OTESSpectrum> buildSpectrumRenderer(BasicSpectrum spectrum,
 							ISmallBodyModel smallBodyModel, boolean headless) throws IOException
 					{
 						return new AdvancedSpectrumRenderer(spectrum, smallBodyModel, false);
 					}
 
 					@Override
-					public IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel,
+					public IBasicSpectrumRenderer<OTESSpectrum> buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel,
 							BasicSpectrumInstrument instrument, boolean headless,
 							SpectrumInstrumentConfig spectrumConfig) throws IOException
 					{
 						OTESSpectrum spectrum = new OTESSpectrum(path,
 								spectrumConfig.getHierarchicalSpectraSearchSpecification(),
 								smallBodyModel.getBoundingBoxDiagonalLength(), instrument);
-						return new AdvancedSpectrumRenderer(spectrum, smallBodyModel, false);
+						return new AdvancedSpectrumRenderer<OTESSpectrum>(spectrum, smallBodyModel, false);
 					}
 
 					@Override
@@ -221,7 +203,7 @@ public class SmallBodyMappingToolAPL
 		{
 
 			@Override
-			public ISpectrumSearchModel buildSearchModel(double diagonalLength)
+			public ISpectrumSearchModel<OVIRSSpectrum> buildSearchModel(double diagonalLength)
 			{
 				return new OVIRSSearchModel(SpectrumInstrumentFactory.getInstrumentForName("OVIRS"));
 			}
@@ -232,21 +214,21 @@ public class SmallBodyMappingToolAPL
 				{
 
 					@Override
-					public IBasicSpectrumRenderer buildSpectrumRenderer(BasicSpectrum spectrum,
+					public IBasicSpectrumRenderer<OVIRSSpectrum> buildSpectrumRenderer(BasicSpectrum spectrum,
 							ISmallBodyModel smallBodyModel, boolean headless) throws IOException
 					{
 						return new AdvancedSpectrumRenderer(spectrum, smallBodyModel, false);
 					}
 
 					@Override
-					public IBasicSpectrumRenderer buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel,
+					public IBasicSpectrumRenderer<OVIRSSpectrum> buildSpectrumRenderer(String path, ISmallBodyModel smallBodyModel,
 							BasicSpectrumInstrument instrument, boolean headless,
 							SpectrumInstrumentConfig spectrumConfig) throws IOException
 					{
 						OVIRSSpectrum spectrum = new OVIRSSpectrum(path,
 								spectrumConfig.getHierarchicalSpectraSearchSpecification(),
 								smallBodyModel.getBoundingBoxDiagonalLength(), instrument);
-						return new AdvancedSpectrumRenderer(spectrum, smallBodyModel, false);
+						return new AdvancedSpectrumRenderer<OVIRSSpectrum>(spectrum, smallBodyModel, false);
 					}
 
 					@Override
@@ -277,7 +259,7 @@ public class SmallBodyMappingToolAPL
 		{
 
 			@Override
-			public ISpectrumSearchModel buildSearchModel(double diagonalLength)
+			public ISpectrumSearchModel<NIRS3Spectrum> buildSearchModel(double diagonalLength)
 			{
 				return new NIRS3SearchModel(SpectrumInstrumentFactory.getInstrumentForName("NIRS3"));
 			}
@@ -287,7 +269,7 @@ public class SmallBodyMappingToolAPL
 		{
 
 			@Override
-			public ISpectrumSearchModel buildSearchModel(double diagonalLength)
+			public ISpectrumSearchModel<MEGANESpectrum> buildSearchModel(double diagonalLength)
 			{
 				return new BaseSpectrumSearchModel<>(SpectrumInstrumentFactory.getInstrumentForName("MEGANE"));
 

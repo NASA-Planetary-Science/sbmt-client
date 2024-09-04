@@ -77,7 +77,6 @@ import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfigIO;
-
 import edu.jhuapl.ses.jsqrl.api.Version;
 import edu.jhuapl.ses.jsqrl.impl.InstanceGetter;
 import edu.jhuapl.ses.jsqrl.impl.SettableMetadata;
@@ -89,6 +88,7 @@ class CometConfigsTest
 	{
 		String configInfoVersion = BasicConfigInfo.getConfigInfoVersion();
 		System.setProperty("edu.jhuapl.sbmt.mission", "TEST_APL_INTERNAL");
+		@SuppressWarnings("unused")
 		SettableMetadata allBodiesMetadata = SettableMetadata.of(Version.of(configInfoVersion));
 		Configuration.setAPLVersion(true);
 		Mission.configureMission();
