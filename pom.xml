@@ -2,9 +2,9 @@
     xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+<!--    <groupId>edu.jhuapl.ses.sbmt</groupId>-->
     <artifactId>sbmt-client</artifactId>
-    <version>1.0.11-b1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>sbmt-client</name>
     <description>The Small Body Mapping Tool</description>
 
@@ -153,23 +153,23 @@
             <artifactId>jsqrl</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.jhuapl.ses.srn.saavtk</groupId>
+            <groupId>edu.jhuapl.ses.saavtk</groupId>
             <artifactId>saavtk</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+            <groupId>edu.jhuapl.ses.sbmt</groupId>
             <artifactId>sbmt-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+            <groupId>edu.jhuapl.ses.sbmt</groupId>
             <artifactId>sbmt-config</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+            <groupId>edu.jhuapl.ses.sbmt</groupId>
             <artifactId>sbmt-dem</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+            <groupId>edu.jhuapl.ses.sbmt</groupId>
             <artifactId>sbmt-image</artifactId>
         </dependency>
         <dependency>
@@ -177,11 +177,11 @@
             <artifactId>sbmt-layer</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+            <groupId>edu.jhuapl.ses.sbmt</groupId>
             <artifactId>sbmt-lidar</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+            <groupId>edu.jhuapl.ses.sbmt</groupId>
             <artifactId>sbmt-model</artifactId>
         </dependency>
         <dependency>
@@ -189,23 +189,23 @@
             <artifactId>sbmt-pipeline</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+            <groupId>edu.jhuapl.ses.sbmt</groupId>
             <artifactId>sbmt-pointing</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+            <groupId>edu.jhuapl.ses.sbmt</groupId>
             <artifactId>sbmt-query</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+            <groupId>edu.jhuapl.ses.sbmt</groupId>
             <artifactId>sbmt-spectrum</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+            <groupId>edu.jhuapl.ses.sbmt</groupId>
             <artifactId>sbmt-stateHistory</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
+            <groupId>edu.jhuapl.ses.sbmt</groupId>
             <artifactId>sbmt-util</artifactId>
         </dependency>
     </dependencies>

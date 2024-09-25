@@ -94,7 +94,7 @@ public class SbmtMainWindow extends MainWindow
                 {
 //                    ImageCollection collection = (ImageCollection)rootPanel.getCurrentView().getModelManager().getModel(ModelNames.IMAGES);
                     @SuppressWarnings("rawtypes")
-					PerspectiveImageCollection collection = (PerspectiveImageCollection)rootPanel.getCurrentView().getModelManager().getModel(ModelNames.provide("IMAGES_V2"));
+					PerspectiveImageCollection collection = (PerspectiveImageCollection)rootPanel.getCurrentView().getModelManager().getModel(ModelNames.IMAGES_V2);
 //                    System.out.println(
 //                            "SbmtMainWindow.SaveImagesAsSTLAction: actionPerformed: number of images " + collection.getImages().size());
                     @SuppressWarnings("unchecked")

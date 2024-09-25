@@ -4004,7 +4004,7 @@ class DartConfigsTest
 		String[] splits = x.split(",");
 //		if ((splits.length == 2) || ((splits.length == 3) && (splits[2].equals("null"))))
 //		{
-			SmallBodyViewConfig config = (SmallBodyViewConfig)SmallBodyViewConfig.getConfig(ShapeModelBody.provide(splits[0]), ShapeModelType.provide(splits[1]));
+			SmallBodyViewConfig config = (SmallBodyViewConfig)SmallBodyViewConfig.getConfig(ShapeModelBody.valueFor(splits[0]), ShapeModelType.provide(splits[1]));
 			return config;
 //		}
 //		else
