@@ -51,6 +51,7 @@ import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 
+@SuppressWarnings("deprecation")
 public class BennuConfigs extends SmallBodyViewConfig
 {
     private static final Mission[] OREXClients = new Mission[] { //

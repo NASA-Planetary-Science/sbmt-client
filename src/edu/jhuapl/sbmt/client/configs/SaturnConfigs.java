@@ -41,6 +41,7 @@ import edu.jhuapl.sbmt.query.v2.IDataQuery;
 import edu.jhuapl.sbmt.spectrum.config.SpectrumInstrumentConfig;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 
+@SuppressWarnings("deprecation")
 public class SaturnConfigs extends SmallBodyViewConfig
 {
 	private static final PointingSource[] SumFiles = new PointingSource[] { PointingSource.GASKELL };
@@ -146,6 +147,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
         configArray.add(c);
 	}
 
+	@SuppressWarnings("unused")
 	private static void buildEpimetheusThomas2000Config(ConfigArrayList<IBodyViewConfig> configArray)
 	{
 		SaturnConfigs c = new SaturnConfigs();
@@ -221,6 +223,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
         configArray.add(c);
 	}
 
+	@SuppressWarnings("unused")
 	private static void buildJanusThomas2000Config(ConfigArrayList<IBodyViewConfig> configArray)
 	{
 		SaturnConfigs c = new SaturnConfigs();
@@ -505,6 +508,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
 	}
 
 
+	@SuppressWarnings("unused")
 	private static void buildCalypsoGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
 	{
 		// Set up body.
@@ -677,6 +681,7 @@ public class SaturnConfigs extends SmallBodyViewConfig
         configArray.add(c);
 	}
 
+	@SuppressWarnings("unused")
 	private static void buildEpimetheusGaskellConfig(ConfigArrayList<IBodyViewConfig> configArray)
 	{
 		// Set up body.

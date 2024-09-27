@@ -78,7 +78,6 @@ import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfigIO;
-
 import edu.jhuapl.ses.jsqrl.impl.InstanceGetter;
 
 class BennuConfigsPublicTest
@@ -88,20 +87,23 @@ class BennuConfigsPublicTest
             Mission.OSIRIS_REX_MIRROR_DEPLOY
     };
 
-    private static final Mission[] ClientsWithOREXModels = new Mission[] { //
+    @SuppressWarnings("unused")
+	private static final Mission[] ClientsWithOREXModels = new Mission[] { //
             Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL, Mission.STAGE_APL_INTERNAL, //
             Mission.OSIRIS_REX, Mission.OSIRIS_REX_TEST, Mission.OSIRIS_REX_DEPLOY, //
             Mission.OSIRIS_REX_MIRROR_DEPLOY
     };
 
-    private static final Mission[] AllBennuClients = new Mission[] { //
+    @SuppressWarnings("unused")
+	private static final Mission[] AllBennuClients = new Mission[] { //
             Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE, //
             Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL, Mission.STAGE_APL_INTERNAL, //
             Mission.OSIRIS_REX, Mission.OSIRIS_REX_TEST, Mission.OSIRIS_REX_DEPLOY, //
             Mission.OSIRIS_REX_MIRROR_DEPLOY
     };
 
-    private static final Mission[] InternalOnly = new Mission[] {
+    @SuppressWarnings("unused")
+	private static final Mission[] InternalOnly = new Mission[] {
     		Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL, Mission.STAGE_APL_INTERNAL
     };
 
@@ -928,6 +930,7 @@ class BennuConfigsPublicTest
 //    															"ORX_OLA_LOW", "ORX_OLA_HIGH"}));
 	}
 
+	@SuppressWarnings("unused")
 	private static void testImagingParameters(ImagingInstrumentConfig imagingConfig)
 	{
 		assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime());
@@ -936,6 +939,7 @@ class BennuConfigsPublicTest
 		assertEquals(imagingConfig.imageSearchDefaultMaxResolution, 1.0e3);
 	}
 
+	@SuppressWarnings("unused")
 	private static void testSpectrumParameters(SpectrumInstrumentConfig spectrumConfig, String rootDirOnServer, boolean hasHypertree)
 	{
 		assertEquals(spectrumConfig.hasSpectralData, true);

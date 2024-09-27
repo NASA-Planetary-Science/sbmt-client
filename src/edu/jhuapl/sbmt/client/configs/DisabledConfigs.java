@@ -3,6 +3,7 @@ package edu.jhuapl.sbmt.client.configs;
 import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.saavtk.config.ConfigArrayList;
+import edu.jhuapl.saavtk.config.IBodyViewConfig;
 import edu.jhuapl.saavtk.model.ShapeModelBody;
 import edu.jhuapl.saavtk.model.ShapeModelType;
 import edu.jhuapl.saavtk.util.FileCache;
@@ -20,7 +21,7 @@ public class DisabledConfigs extends SmallBodyViewConfig
 	}
 
 
-	public static void initialize(ConfigArrayList configArray)
+	public static void initialize(ConfigArrayList<IBodyViewConfig> configArray)
     {
         DisabledConfigs c = new DisabledConfigs();
 

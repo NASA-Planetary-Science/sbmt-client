@@ -187,6 +187,7 @@ public class MarsConfigs extends SmallBodyViewConfig
         configArray.add(c);
 	}
 
+	@SuppressWarnings("unused")
 	private static void configurePhobosErnstHierarchical(ConfigArrayList<IBodyViewConfig> configArray)
 	{
 		MarsConfigs c = new MarsConfigs();
@@ -384,6 +385,7 @@ public class MarsConfigs extends SmallBodyViewConfig
 		configArray.add(c);
 	}
 
+	@SuppressWarnings("unused")
 	private static void configureDeimosExperimental(ConfigArrayList<IBodyViewConfig> configArray)
     {
 		MarsConfigs c = new MarsConfigs();

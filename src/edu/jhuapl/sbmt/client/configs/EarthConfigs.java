@@ -41,7 +41,7 @@ public class EarthConfigs {
 
 		String authorString = "lunar-vertex-reiner-gamma-nac-dtm";
 
-		builder.body(ShapeModelBody.valueFor("Moon"), BodyType.PLANETS_AND_SATELLITES, ShapeModelPopulation.EARTH);
+		builder.body(ShapeModelBody.MOON, BodyType.PLANETS_AND_SATELLITES, ShapeModelPopulation.EARTH);
 		builder.model(ShapeModelType.provide(authorString), ShapeModelDataUsed.IMAGE_BASED, "Reiner Gamma NAC DTM");
 
 		builder.modelRes(ImmutableList.of(1098188));

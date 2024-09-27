@@ -78,7 +78,6 @@ import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfigIO;
-
 import edu.jhuapl.ses.jsqrl.impl.InstanceGetter;
 
 class BennuConfigsTest
@@ -105,7 +104,8 @@ class BennuConfigsTest
     		Mission.APL_INTERNAL, Mission.TEST_APL_INTERNAL, Mission.STAGE_APL_INTERNAL
     };
 
-    private static final Mission[] PublicOnly = new Mission[] {
+    @SuppressWarnings("unused")
+	private static final Mission[] PublicOnly = new Mission[] {
     		Mission.PUBLIC_RELEASE, Mission.TEST_PUBLIC_RELEASE, Mission.STAGE_PUBLIC_RELEASE
     };
 
@@ -1802,6 +1802,7 @@ class BennuConfigsTest
 				"ORX_OLA_LOW", "ORX_OLA_HIGH"});
 	}
 
+	@SuppressWarnings("unused")
 	private static void testImagingParameters(ImagingInstrumentConfig imagingConfig)
 	{
 		assertEquals(imagingConfig.imageSearchDefaultStartDate, new GregorianCalendar(2000, 0, 1, 0, 0, 0).getTime());

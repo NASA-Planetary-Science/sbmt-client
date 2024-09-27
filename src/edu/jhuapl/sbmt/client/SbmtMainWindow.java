@@ -73,7 +73,8 @@ public class SbmtMainWindow extends MainWindow
         return new ImageIcon(getClass().getResource("/edu/jhuapl/sbmt/data/eros.png"));
     }
 
-    private class SaveImagesAsSTLAction extends AbstractAction
+    @SuppressWarnings("unused")
+	private class SaveImagesAsSTLAction extends AbstractAction
     {
         public SaveImagesAsSTLAction()
         {
@@ -92,10 +93,12 @@ public class SbmtMainWindow extends MainWindow
                 if (file != null)
                 {
 //                    ImageCollection collection = (ImageCollection)rootPanel.getCurrentView().getModelManager().getModel(ModelNames.IMAGES);
-                    PerspectiveImageCollection collection = (PerspectiveImageCollection)rootPanel.getCurrentView().getModelManager().getModel(ModelNames.IMAGES_V2);
+                    @SuppressWarnings("rawtypes")
+					PerspectiveImageCollection collection = (PerspectiveImageCollection)rootPanel.getCurrentView().getModelManager().getModel(ModelNames.IMAGES_V2);
 //                    System.out.println(
 //                            "SbmtMainWindow.SaveImagesAsSTLAction: actionPerformed: number of images " + collection.getImages().size());
-                    List<PerspectiveImageMetadata> images = collection.getAllItems();
+                    @SuppressWarnings("unchecked")
+					List<PerspectiveImageMetadata> images = collection.getAllItems();
                     for (PerspectiveImageMetadata image : images)
                     {
                         System.out.println(image.getName());

@@ -48,6 +48,7 @@ import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 
+@SuppressWarnings("deprecation")
 public class RyuguConfigs extends SmallBodyViewConfig
 {
 	List<SpectrumInstrumentMetadata<SpectrumSearchSpec>> instrumentSearchSpecs = new ArrayList<SpectrumInstrumentMetadata<SpectrumSearchSpec>>();
@@ -229,14 +230,16 @@ public class RyuguConfigs extends SmallBodyViewConfig
         // Re-enable this if/when that issue is addressed.
 //        QueryBase queryBase = new GenericPhpQuery("/ryugu/truth/imaging", "ryugu", "/ryugu/truth/imaging/images/gallery");
 //        ImagingInstrument oncCam = setupImagingInstrument(bodyConfig, modelConfig, Instrument.IMAGING_DATA, queryBase, new ImageSource[] { ImageSource.SPICE }, ImageType.ONC_TRUTH_IMAGE);
-        SBMTFileLocator fileLocatorTir = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
+        @SuppressWarnings("unused")
+		SBMTFileLocator fileLocatorTir = SBMTFileLocators.of(bodyConfig, modelConfig, Instrument.TIR, ".fit", ".INFO", null, ".jpeg");
 //        QueryBase queryBaseTir = new FixedListQuery(fileLocatorTir.get(SBMTFileLocator.TOP_PATH).getLocation("") + "/simulated", fileLocatorTir.get(SBMTFileLocator.GALLERY_FILE).getLocation(""));
 //        QueryBase queryBaseTir = new GenericPhpQuery("/ryugu/truth/tir", "ryugu_nasa002_tir", "/ryugu/truth/tir/gallery");
 
         DataQuerySourcesMetadata tirCamMetadata = DataQuerySourcesMetadata.of("/ryugu/truth/tir", "", null, "ryugu_nasa002_tir", "/ryugu/truth/tir/gallery");
         ImageDataQuery tirQuery = new ImageDataQuery(tirCamMetadata);
 
-        ImagingInstrument tir = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQuery, new PointingSource[] { PointingSource.SPICE }, ImageType.TIR_IMAGE);
+        @SuppressWarnings("unused")
+		ImagingInstrument tir = setupImagingInstrument(bodyConfig, modelConfig, Instrument.TIR, tirQuery, new PointingSource[] { PointingSource.SPICE }, ImageType.TIR_IMAGE);
 
 //        QueryBase queryBase = new GenericPhpQuery("/ryugu/truth/onc", "ryugu_sim", "/ryugu/truth/onc/gallery");
 
@@ -1376,6 +1379,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
         lidarConfig.lidarOffsetScale = 0.0005;
 	}
 
+	@SuppressWarnings("unused")
 	private static ImagingInstrument setupImagingInstrument(SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, PointingSource[] imageSources, ImageType imageType)
     {
         SBMTFileLocator fileLocator = SBMTFileLocators.of(bodyConfig, modelConfig, instrument, ".fits", ".INFO", ".SUM", ".jpeg");
@@ -1398,7 +1402,7 @@ public class RyuguConfigs extends SmallBodyViewConfig
         return setupImagingInstrument(fileLocator, bodyConfig, modelConfig, instrument, queryBase, imageSources, imageType, rotation, flip);
     }
 
-    private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, IDataQuery queryBase, PointingSource[] imageSources, ImageType imageType, double rotation, String flip)
+	private static ImagingInstrument setupImagingInstrument(SBMTFileLocator fileLocator, SBMTBodyConfiguration bodyConfig, ShapeModelConfiguration modelConfig, Instrument instrument, IDataQuery queryBase, PointingSource[] imageSources, ImageType imageType, double rotation, String flip)
     {
         Builder<ImagingInstrumentConfiguration> imagingInstBuilder = ImagingInstrumentConfiguration.builder(instrument, SpectralImageMode.MONO, queryBase, imageSources, fileLocator, imageType, rotation, flip);
 

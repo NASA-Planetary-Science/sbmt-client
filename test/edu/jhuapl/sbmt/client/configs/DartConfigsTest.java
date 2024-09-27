@@ -79,12 +79,12 @@ import edu.jhuapl.sbmt.spectrum.model.core.search.SpectrumSearchSpec;
 import edu.jhuapl.sbmt.spectrum.model.io.SpectrumInstrumentMetadataIO;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfig;
 import edu.jhuapl.sbmt.stateHistory.config.StateHistoryConfigIO;
-
 import edu.jhuapl.ses.jsqrl.impl.InstanceGetter;
 
 class DartConfigsTest
 {
 
+	@SuppressWarnings("unused")
 	private static final Mission[] APLClients = new Mission[] { //
             Mission.APL_INTERNAL, //
             Mission.TEST_APL_INTERNAL, //
@@ -240,7 +240,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact1-20200629-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 1 20200629 v01");
@@ -367,7 +367,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact2-20200629-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 2 20200629 v01");
@@ -494,7 +494,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact3-20200629-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 3 20200629 v01");
@@ -621,7 +621,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact4-20200629-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 4 20200629 v01");
@@ -748,7 +748,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact4-ra-20210211-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 4 RA 20210211 v01");
@@ -870,7 +870,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact5-20200629-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 5 20200629 v01");
@@ -997,7 +997,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact9-20210630-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 9 20210630 v01");
@@ -1119,7 +1119,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact1-20200629-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 1 20200629 v01");
@@ -1246,7 +1246,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact2-20200629-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 2 20200629 v01");
@@ -1373,7 +1373,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact3-20200629-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 3 20200629 v01");
@@ -1500,7 +1500,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact4-20200629-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 4 20200629 v01");
@@ -1627,7 +1627,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact4-ra-20210211-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 4 RA 20210211 v01");
@@ -1749,7 +1749,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact5-20200629-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 5 20200629 v01");
@@ -2004,7 +2004,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("ideal-impact9-20210630-v01"));
         assertEquals(c.modelLabel, "Ideal Impact 9 20210630 v01");
@@ -2126,7 +2126,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("errors-impact1-20200629-v01"));
         assertEquals(c.modelLabel, "Errors Impact 1 20200629 v01");
@@ -2253,7 +2253,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("errors-impact2-20200629-v01"));
         assertEquals(c.modelLabel, "Errors Impact 2 20200629 v01");
@@ -2380,7 +2380,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("errors-impact3-20200629-v01"));
         assertEquals(c.modelLabel, "Errors Impact 3 20200629 v01");
@@ -2507,7 +2507,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("errors-impact4-20200629-v01"));
         assertEquals(c.modelLabel, "Errors Impact 4 20200629 v01");
@@ -2634,7 +2634,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("errors-impact5-20200629-v01"));
         assertEquals(c.modelLabel, "Errors Impact 5 20200629 v01");
@@ -2767,7 +2767,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("errors-impact9-20210630-v01"));
         assertEquals(c.modelLabel, "Errors Impact 9 20210630 v01");
@@ -2889,7 +2889,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("errors-impact1-20200629-v01"));
         assertEquals(c.modelLabel, "Errors Impact 1 20200629 v01");
@@ -3016,7 +3016,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("errors-impact2-20200629-v01"));
         assertEquals(c.modelLabel, "Errors Impact 2 20200629 v01");
@@ -3143,7 +3143,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("errors-impact3-20200629-v01"));
         assertEquals(c.modelLabel, "Errors Impact 3 20200629 v01");
@@ -3270,7 +3270,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("errors-impact4-20200629-v01"));
         assertEquals(c.modelLabel, "Errors Impact 4 20200629 v01");
@@ -3397,7 +3397,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("errors-impact5-20200629-v01"));
         assertEquals(c.modelLabel, "Errors Impact 5 20200629 v01");
@@ -3530,7 +3530,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("errors-impact9-20210630-v01"));
         assertEquals(c.modelLabel, "Errors Impact 9 20210630 v01");
@@ -3619,7 +3619,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("dart-dimorphos-v003"));
         assertEquals(c.type, BodyType.ASTEROID);
@@ -3712,7 +3712,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIMORPHOS);
         assertEquals(c.author, ShapeModelType.provide("dart-dimorphos-v004"));
         assertEquals(c.type, BodyType.ASTEROID);
@@ -3805,7 +3805,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Didymos-v003";
+//        String label = "Didymos-v003";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("dart-didymos-v001"));
         assertEquals(c.type, BodyType.ASTEROID);
@@ -3896,7 +3896,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Didymos-v003";
+//        String label = "Didymos-v003";
         assertEquals(c.body, ShapeModelBody.DIDYMOS);
         assertEquals(c.author, ShapeModelType.provide("dart-didymos-v003"));
         assertEquals(c.type, BodyType.ASTEROID);
@@ -4027,7 +4027,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS_SYSTEM);
         assertEquals(c.author, ShapeModelType.provide("dart-dimorphos-v003-center"));
         assertEquals(c.type, BodyType.ASTEROID);
@@ -4120,7 +4120,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Dimorphos-v004";
+//        String label = "Dimorphos-v004";
         assertEquals(c.body, ShapeModelBody.DIDYMOS_SYSTEM);
         assertEquals(c.author, ShapeModelType.provide("dart-dimorphos-v004-center"));
         assertEquals(c.type, BodyType.ASTEROID);
@@ -4213,7 +4213,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Didymos-v003";
+//        String label = "Didymos-v003";
         assertEquals(c.body, ShapeModelBody.DIDYMOS_SYSTEM);
         assertEquals(c.author, ShapeModelType.provide("dart-didymos-v001-center"));
         assertEquals(c.type, BodyType.ASTEROID);
@@ -4304,7 +4304,7 @@ class DartConfigsTest
         FeatureConfigIOFactory.getIOForClassType(BasemapImageConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
         FeatureConfigIOFactory.getIOForClassType(StateHistoryConfig.class.getSimpleName()).setViewConfig((ViewConfig)c);
 
-        String label = "Didymos-v003";
+//        String label = "Didymos-v003";
         assertEquals(c.body, ShapeModelBody.DIDYMOS_SYSTEM);
         assertEquals(c.author, ShapeModelType.provide("dart-didymos-v003-center"));
         assertEquals(c.type, BodyType.ASTEROID);
